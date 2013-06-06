@@ -39,27 +39,34 @@
 		</script>
 	</head>
 	<body>
-		<div id='wrapper'>
+		<div id='reset'>
+			<div id='wrapper'>
 <?php 
-			echo "<div id='banner'>
-				<img src='img/coding_dojo_white.png' />
-				<h1>AnswerSheet</h1>
-				<p>Welcome " . $_SESSION['user']['first_name'] ."! <a href='logout_process.php'>Log Off</a></p>
-			</div><!--end of div banner-->";
+				echo "<div id='banner'>
+					<img src='img/coding_dojo_white.png' />
+					<h1>AnswerSheet</h1>
+					<div class='landing'>
+						<p><a href='logout_process.php'>Log Off</a></p>
+					</div>
+					<div class='landing'>
+						<p>Welcome " . $_SESSION['user']['first_name'] ."! </p>
+					</div>
+				</div><!--end of div banner-->";
 ?>
-			<div id='body'>
-				<div id='updates'>
-<!-- 					<h3>Recent Additions:</h3>
-					<?php 
-						$display->recentAdditions();
-					?> -->
-				</div>			 
-				<div id='feedback_accordion' class="clear">
-					<?php
-						// $display->answerSheet();
-					?>
-				</div><!--end of div feedback_accordion-->
-			</div><!--end of div body-->
-		</div><!--end of div wrapper-->
+				<div id='body'>
+					<div id='cohorts'>
+	<!--  					Choose Location and Cohort -->
+						<?php 
+							$display->cohortDropdown();
+						?>
+	 				</div>			 
+					<div id='feedback_accordion' class="clear">
+						<?php
+							// $display->answerSheet();
+						?>
+					</div><!--end of div feedback_accordion-->
+				</div><!--end of div body-->
+			</div><!--end of div wrapper-->
+		</div><!--end of div reset-->
 	</body>
 </html>

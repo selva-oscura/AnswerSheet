@@ -48,10 +48,10 @@ Class Display extends Process
 		else
 		{
 			for($week=1; $week<10; $week++){
-				$html=$html ."<h3 id='week" . $week . "' class='week_bar'><img class='a_right' src='img/arrow_right.png' /><img class='a_down' src='img/arrow_down.png'/>Week " . $week . "</h3>";
+				$html=$html ."<h3 id='week" . $week . "' class='week_bar'><img class='a_right' src='img/arrow_right_white.png' /><img class='a_down' src='img/arrow_down_white.png'/>Week " . $week . "</h3>";
 				for($day=1;$day<6; $day++){
 					$html=$html ."<div class='week" . $week . "'>
-						<p class='day_bar'>Day " . $day;
+						<p class='day_bar wk" . $week . "'>Day " . $day;
 					$day_theme_catcher=0;
 					foreach($answers as $answer){
 						if($day_theme_catcher==0){						
@@ -66,7 +66,7 @@ Class Display extends Process
 						if(($answer['week']==$week) && ($answer['day']==$day)){
 							$html=$html . "<table class='assignment_space'><tbody><tr><td>" . $answer['assignment_title'] . " - " . $answer['feedback_title'] . " from " . $answer['first_name'];
 							if($answer['feedback_type']==1){
-								$html=$html . ", video, " . $answer['available_date'] ."</td><td class='get_media'><a href='media/" . $answer['url'] . "' class='vid" . $vid . "' target='vid" . $vid . "'>Click to View</td></tr></tbody></table><iframe name='vid" . $vid . "'id='vid" . $vid . "' frameborder='0' allowfullscreen></iframe>";
+								$html=$html . ", video, " . $answer['available_date'] ."</td><td class='get_media'><a href='media/" . $answer['url'] . "' class='vid" . $vid . "' target='vid" . $vid . "'>View</td></tr></tbody></table><iframe name='vid" . $vid . "'id='vid" . $vid . "' frameborder='0' allowfullscreen></iframe>";
 								$vid++;
 							}
 							else{
@@ -77,9 +77,45 @@ Class Display extends Process
 					$html=$html . "</div><!--end of day " . $day . "-->";
 				}
 			}
-		}
+		
+}		echo $html;
+	}
+
+
+	function cohortDropdown()
+	{
+		
+		//NEED TO REVISE DATABASE STRUCTURE TO CREATE A GOOD TABLE FOR COHORT/LOCATION/ETC.
+		// $query="SELECT location.id, users.location, users.cohort, location_labels.location_name FROM users LEFT JOIN location ON location_labels.id=users.location ORDER BY users.cohort ASC";
+		// $results = fetch_all($query);
+		// $html = "<div id='cohort_select'><h2>Select a Cohort:</h2> <form id='display_cohort' action='answersheet_process.php' method='post'><select name = 'cohort'>";
+
+		// foreach($results as $name)
+		// {
+		// 	$html=$html . "<option value=" . $name['Code'] . ">" . $name['Name'] . "</option>";
+		// }
+		//UNTIL THEN, THIS DROPDOWN WILL DO
+
+		$html = "<div id='cohort_select'><h3>Select a Cohort:</h3> <form id='display_cohort' action='answersheet_process.php' method='post'><select name = 'cohort'>";
+		$html=$html . "<option value=' '> </option><option value='120130212'>Mountain View - 2013.02.12</option>
+			<option value='120130408'>Mountain View - 2013.04.08</option>
+			<option value='120130520'>Mountain View - 2013.05.20</option>
+			<option value='120130624'>Mountain View - 2013.06.24</option>
+			<option value='120130729'>Mountain View - 2013.07.29</option>
+			<option value='120130902'>Mountain View - 2013.09.02</option>
+			<option value='120131007'>Mountain View - 2013.10.07</option>
+			<option value='220130812'>Seattle - 2014.02.12</option>";
+		$html=$html . "<input type='submit' id='button' value='Display' /></select></form></div>";
+
+
+
+		//submit button eliminated after adding the submit on change functionality to the dropdown field
+		// $html=$html . "<input type='submit' id='button' value='Show Data' />";
+
+		// $html=$html . "</select></form></div>";
 		echo $html;
 	}
+
 }
 
 

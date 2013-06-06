@@ -1,6 +1,18 @@
+#reset{
+	background-color: black;
+	width:100%;
+	height:auto;
+	padding-bottom: 120px;
+	background-image:url('../img/red_2_flip.png');
+	background-size:110px 110px;
+	background-repeat:no-repeat;
+	background-position:100% 100%;
+	z-index:1;
+}
+
 #wrapper{
 	padding:0px;
-	margin:0px;
+	margin:auto;
 	min-height:710px;
 	width:1100px;
 	font-size:12pt;
@@ -12,6 +24,11 @@
 
 #banner{
 	height:120px;
+	background-image:url('../img/white_1.png');
+	background-size:110px 110px;
+	background-repeat:no-repeat;
+	background-position:100% 0%;
+	z-index:1;
 }
 
 #banner img{
@@ -34,6 +51,25 @@
 	line-height: 0;
 }
 
+.landing{
+	height:100px;
+	width:200px;
+	float:right;
+}
+
+.landing p{
+	margin:80px 50px 0px 0px;
+	float: right;
+}
+
+.landing a:link {
+	color:#FFFFFF;
+}
+
+.landing a:visited {
+	color:#FFFFFF;
+}
+
 #body{
 	margin-left:auto;
 	margin-right:auto;
@@ -41,7 +77,21 @@
 	overflow:auto;
 	background-color: white;
 	color: black;
+	background-image:url('../img/green_2.png');
+	background-size:120px 120px;
+	background-repeat:no-repeat;
+	background-position:0px 420px;
+	z-index:1;
 }
+
+#body a:link {
+	color:#000000;
+}
+
+#body a:visited {
+	color:#000000;
+}
+
 
 h1{
 	font-size: 24pt;
@@ -66,12 +116,23 @@ p{
 
 #updates{
 	width: 750px;
-	min-height:50px;
+	min-height:60px;
 	margin: 1px 100px 0px 0px;
 	padding: 0px 0px 0px 0px;
 	float: right;
 	background-color: white;
-	color: black;	
+	color: black;
+	background-image:url('../img/yellow_1.png');
+	background-size:90px 120px;
+	background-repeat:no-repeat;
+	background-position:660px 60px;
+	z-index:1;
+
+}
+
+#cohort_select{
+	float:right;
+	background-color: white;
 }
 
 #feedback_accordion{
@@ -93,7 +154,8 @@ p{
 	padding: 0px 0px 0px 10px;
 	float: right;
 	font-variant: small-caps;
-	background-color: black;
+	background-image: url('../img/black_gradient_36.png');
+	background-repeat:repeat-x;
 	color: white;
 }
 
@@ -104,13 +166,14 @@ p{
 	padding: 0px 0px 0px 10px;
 	float: right;
 	font-variant: small-caps;
-	background-color: silver;
+	font-weight: bolder;
 }
 
 .assignment_space{
 	float: right;
 	width: 650px;
 	margin: 1px 50px 0px 0px;
+	background-color: white;
 }
 
 .get_media{
@@ -124,29 +187,56 @@ iframe{
 	float:right;
 	margin: 0px 25px 0px 0px;
 	width:650px;
-	height:500px;
-}
-
-.yellow_belt{
-	background-color: #FACE00;
-	color: black;
-}
-
-.green_belt{
-	background-color: #1F9600;
-	color: black;
-}
-
-.red_belt{
-	background-color: #E5212B;
-	color: black;
-}
-
-.black_belt{
-	background-color: black;
-	color: white;
+	height:420px;
 }
 
 .errors{
 	color: #E5212B;
+}
+
+.wk1{
+	background-image: url('../img/yellow_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk2{
+	background-image: url('../img/yellow_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk3{
+	background-image: url('../img/green_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk4{
+	background-image: url('../img/green_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk5{
+	background-image: url('../img/red_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk6{
+	background-image: url('../img/red_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk7{
+	background-image: url('../img/red_gradient_24.png');
+	background-repeat:repeat-x;
+}
+
+.wk8{
+	background-image: url('../img/black_gradient_24.png');
+	background-repeat:repeat-x;
+	color: #FFFFFF;
+}
+
+.wk9{
+	background-image: url('../img/black_gradient_24.png');
+	background-repeat:repeat-x;
+	color: #FFFFFF;
 }
