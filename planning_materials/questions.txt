@@ -1,0 +1,38 @@
+The not-quite-1 million questions
+
+
+LOG-IN / REGISTRATION
+Do you want students to log in to the answersheet via boomyeah?
+	SEPARATE LOG-IN PAGE
+
+If not, would students be added by instructors/admin (presumably using the same e-mail and password as for bodingdojo.boomyeah.com) or would they register themselves the first time (& registration via the registration/log-in page would default to student as user_level to set permissions)?
+	ADDED BY ADMIN/INSTRUCTORS
+
+
+SCHEDULE
+To what extent should I assume a permanent 9-week, 5-days/week format & code that in versus allowing for creater flexbility (but requiring set-up of # of weeks, etc. for each new cohort)?
+	9&5
+
+LOCATIONS
+Set up with different location possibilities -- Mountain View. Seattle? Others?
+
+
+PERMISSIONS
+For User Levels I was thinking three
+1 - Student - download / viewing of his/her own individual feedback and of feedback to his/her cohort
+2 - Instructor - upload, delete, edit of materials/descriptions/day_theme for their location
+3 - Admin - upload, delete, edit of materials/descriptions/day_theme for their location(s)
+	add, delete edit cohorts, users, & user_level (a.k.a. permissions) for their location(s)
+(Possible 4th Super-admin for users/user_level for all locations)
+	2 Levels -- Student & Instructor
+
+PAGES 
+4 planned
+1 - Login/Registration
+2 - Materials/Feedback - Student View (download/view only)
+3 - Materials/Feedback - Instructor View (for adding / deleting materials, editing descriptions & availability dates)
+4 - Edit Courses/Users - add, edit, delete users (name, email, user_level), cohort membership, dates of cohort, locations, etc.
+
+OTHER FUNCTIONALITY?
+These would obviously be on an as-time-permitting basis:
+Did you want people to be able to post comments/questions in response to the feedback or am I misremembering?

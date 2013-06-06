@@ -1,0 +1,152 @@
+#wrapper{
+	padding:0px;
+	margin:0px;
+	min-height:710px;
+	width:1100px;
+	font-size:12pt;
+	font-family:"Times New Roman", Times, serif;
+	vertical-align:baseline;
+	background-color: black;
+	color: white;
+} 
+
+#banner{
+	height:120px;
+}
+
+#banner img{
+	float: left;
+	margin:2px 12px 0px 12px;
+}
+
+#banner h1{
+	font-size: 36px;
+	font-variant: small-caps;
+	line-height:1;
+	margin-top: 54px;
+	text-shadow: 2px 2px #000000;
+	float:left;
+}
+
+#banner p{
+	font-size: 14pt; 
+	text-shadow: 1px 1px #000000;
+	line-height: 0;
+}
+
+#body{
+	margin-left:auto;
+	margin-right:auto;
+	width:1000px;
+	overflow:auto;
+	background-color: white;
+	color: black;
+}
+
+h1{
+	font-size: 24pt;
+	font-variant: small-caps;
+}
+
+h2{
+	font-size: 16pt;
+	text-transform: uppercase;
+	line-height: 0;
+}
+
+h3{
+	font-size: 14pt;
+	text-transform: uppercase;
+	line-height: 1.75;
+}
+
+p{
+	font-size: 14pt; 
+}
+
+#updates{
+	width: 750px;
+	min-height:50px;
+	margin: 1px 100px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	float: right;
+	background-color: white;
+	color: black;	
+}
+
+#feedback_accordion{
+	width:800px;
+	margin:10px 80px;
+	float:right;
+}
+#feedback_accordion h3{
+	cursor:pointer;
+}
+.clear{
+	clear:both;
+}
+
+.week_bar{
+	height: 36px;
+	width: 750px;
+	margin: 1px 25px 0px 0px;
+	padding: 0px 0px 0px 10px;
+	float: right;
+	font-variant: small-caps;
+	background-color: black;
+	color: white;
+}
+
+.day_bar{
+	height: 24px;
+	width: 700px;
+	margin: 0px 25px 0px 0px;
+	padding: 0px 0px 0px 10px;
+	float: right;
+	font-variant: small-caps;
+	background-color: silver;
+}
+
+.assignment_space{
+	float: right;
+	width: 650px;
+	margin: 1px 50px 0px 0px;
+}
+
+.get_media{
+	color: red;
+	width: 150px;
+	float: right;
+	text-align: right;
+}
+
+iframe{
+	float:right;
+	margin: 0px 25px 0px 0px;
+	width:650px;
+	height:500px;
+}
+
+.yellow_belt{
+	background-color: #FACE00;
+	color: black;
+}
+
+.green_belt{
+	background-color: #1F9600;
+	color: black;
+}
+
+.red_belt{
+	background-color: #E5212B;
+	color: black;
+}
+
+.black_belt{
+	background-color: black;
+	color: white;
+}
+
+.errors{
+	color: #E5212B;
+}
