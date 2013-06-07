@@ -49,7 +49,7 @@
 						<p><a href='logout_process.php'>Log Off</a></p>
 					</div>
 					<div class='landing'>
-						<p>Welcome " . $_SESSION['user']['first_name'] ."! </p>
+						<p>Welcome, " . $_SESSION['user']['first_name'] ."! </p>
 					</div>
 				</div><!--end of div banner-->";
 	?>

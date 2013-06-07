@@ -74,13 +74,14 @@
 	margin-left:auto;
 	margin-right:auto;
 	width:1000px;
+	min-height: 600px;
 	overflow:auto;
 	background-color: white;
 	color: black;
 	background-image:url('../img/green_2.png');
 	background-size:120px 120px;
 	background-repeat:no-repeat;
-	background-position:0px 420px;
+	background-position:0px 480px;
 	z-index:1;
 }
 
@@ -127,12 +128,6 @@ p{
 	background-repeat:no-repeat;
 	background-position:660px 60px;
 	z-index:1;
-
-}
-
-#cohort_select{
-	float:right;
-	background-color: white;
 }
 
 #feedback_accordion{
@@ -143,6 +138,18 @@ p{
 #feedback_accordion h3{
 	cursor:pointer;
 }
+
+#cohort_display{
+	width:800px;
+	margin:10px 80px;
+	float:right;
+}
+
+#cohort_display h3{
+	cursor:pointer;
+}
+
+
 .clear{
 	clear:both;
 }
@@ -177,11 +184,19 @@ p{
 }
 
 .get_media{
-	color: red;
+	color: black;
 	width: 150px;
 	float: right;
 	text-align: right;
 }
+
+.right{
+	/*color: black;*/
+	width: 60px;
+	float: right;
+	text-align: right;
+}
+
 
 iframe{
 	float:right;

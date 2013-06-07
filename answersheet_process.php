@@ -34,6 +34,7 @@ Class Display extends Process
 		}
 		echo $html;
 	}
+
 	function answerSheet()
 	{
 		$answers=array();
@@ -77,10 +78,9 @@ Class Display extends Process
 					$html=$html . "</div><!--end of day " . $day . "-->";
 				}
 			}
-		
-}		echo $html;
+		}
+		echo $html;
 	}
-
 
 	function cohortDropdown()
 	{
@@ -96,8 +96,9 @@ Class Display extends Process
 		// }
 		//UNTIL THEN, THIS DROPDOWN WILL DO
 
-		$html = "<div id='cohort_select'><h3>Select a Cohort:</h3> <form id='display_cohort' action='answersheet_process.php' method='post'><select name = 'cohort'>";
-		$html=$html . "<option value=' '> </option><option value='120130212'>Mountain View - 2013.02.12</option>
+		$html = "<div id='cohort_select'><img src='img/yellow_1.png' width='90px' height='120px' alt='ninja image'/><form id='display_cohort' action='answersheet_process.php' method='post'><select name = 'cohort'>";
+		$html=$html . "<option value=' '>Select Location and Cohort: </option>
+			<option value='120130212'>Mountain View - 2013.02.12</option>
 			<option value='120130408'>Mountain View - 2013.04.08</option>
 			<option value='120130520'>Mountain View - 2013.05.20</option>
 			<option value='120130624'>Mountain View - 2013.06.24</option>
@@ -105,26 +106,97 @@ Class Display extends Process
 			<option value='120130902'>Mountain View - 2013.09.02</option>
 			<option value='120131007'>Mountain View - 2013.10.07</option>
 			<option value='220130812'>Seattle - 2014.02.12</option>";
-		$html=$html . "<input type='submit' id='button' value='Display' /></select></form></div>";
-
-
-
-		//submit button eliminated after adding the submit on change functionality to the dropdown field
-		// $html=$html . "<input type='submit' id='button' value='Show Data' />";
-
-		// $html=$html . "</select></form></div>";
+		// eliminated after AJAXing of submit
+		// $html=$html . "<input type='submit' id='button' value='Display' />";  
+		$html=$html . "</select></form></div>";
 		echo $html;
 	}
 
+	function editAnswers()
+	{
+		$cohort=$_POST['cohort'];
+		$answers=array();
+		$html="";
+		$query="SELECT answers.id as answer_id, week, day, day_theme, assignment_title, feedback_title, feedback_author, DATE(available_on) AS available_date, feedback_type, users.first_name AS first_name FROM answers LEFT JOIN users ON users.id=answers.feedback_author WHERE answers.recipient={$_POST['cohort']} ORDER BY week ASC, day ASC, available_date ASC";
+		$answers = $this->connection->fetch_all($query);
+
+		if(!(count($answers)>0))
+		{
+			$html="<p>No feedback or answers have been posted yet.</p>";
+		}
+		else
+		{
+			for($week=1; $week<10; $week++)
+			{
+				$html=$html ."<h3 id='week" . $week . "' class='week_bar'>Week " . $week . "</h3>";
+				for($day=1;$day<6; $day++)
+				{
+					$html=$html ."<div class='week" . $week . "'>
+						<p class='day_bar wk" . $week . "'>Day " . $day;
+					$day_theme_catcher=0;
+					foreach($answers as $answer)
+					{
+						if($day_theme_catcher==0)
+						{						
+							if(($answer['week']==$week) && ($answer['day']==$day))
+							{
+								$html=$html . " - " . $answer['day_theme'];
+								$day_theme_catcher=1;
+							}
+						}
+					}
+					$html=$html . "</p>";
+					$add_option_catcher=0;
+					foreach($answers as $answer)
+					{
+						if(($answer['week']==$week) && ($answer['day']==$day))
+						{
+							$html=$html . "<table class='assignment_space'><tbody><tr><td>" . $answer['assignment_title'] . " - " . $answer['feedback_title'] . " from " . $answer['first_name'];
+							if($answer['feedback_type']==1)
+							{
+								$html=$html . ", video, ";
+							}
+							else
+							{
+								$html=$html . ", code, ";
+							}
+							$html=$html . $answer['available_date'] . "</td>
+								<td class='right'><form class='edit_answer' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='edit_answer' />
+								<input type='hidden' name='cohort' value='" . $cohort . "'>	
+								<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'>
+								<input type='submit' class='edit_button' value='Edit' />
+								</form></td>
+								<td class='right'><form class='delete_answer' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='delete_answer' />
+								<input type='hidden' name='cohort' value='" . $cohort . "'>	
+								<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'>
+								<input type='submit' class='delete_button' value='Delete' />
+								</form></td></tr></tbody></table>";
+						}
+					}
+					$html=$html . "</div><!--end of day " . $day . "-->";
+				}
+			}
+		}
+		echo json_encode($html);
+	}
 }
-
-
-
-
 
 
 $display = new Display;
 
+if(isset($_POST['delete_answer']))
+{
+	$query="DELETE FROM answers WHERE answers.id={$_POST['answer_id']}";
+	mysql_query($query);
+	$display->editAnswers();
+	// $display->editAnswers();
+}
+else if(isset($_POST['cohort']))
+{
+	$display->editAnswers();
+}
 
 
 
