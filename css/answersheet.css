@@ -13,7 +13,7 @@
 #wrapper{
 	padding:0px;
 	margin:auto;
-	min-height:710px;
+	min-height:800px;
 	width:1100px;
 	font-size:12pt;
 	font-family:"Times New Roman", Times, serif;
@@ -53,7 +53,7 @@
 
 .landing{
 	height:100px;
-	width:200px;
+	width:280px;
 	float:right;
 }
 
@@ -126,7 +126,7 @@ p{
 	background-image:url('../img/yellow_1.png');
 	background-size:90px 120px;
 	background-repeat:no-repeat;
-	background-position:660px 60px;
+	background-position:660px 0px;
 	z-index:1;
 }
 
@@ -137,6 +137,10 @@ p{
 }
 #feedback_accordion h3{
 	cursor:pointer;
+}
+
+#cohorts{
+	padding-left:10px;
 }
 
 #cohort_display{
@@ -191,7 +195,6 @@ p{
 }
 
 .right{
-	/*color: black;*/
 	width: 60px;
 	float: right;
 	text-align: right;
@@ -255,3 +258,36 @@ iframe{
 	background-repeat:repeat-x;
 	color: #FFFFFF;
 }
+
+.update_feedback label, .update_feedback input{
+	display:inline-block;
+}
+
+.update_feedback label{
+	width:200px;
+	text-align: right;
+	margin-right:6px;
+}
+
+.update_feedback input{
+	width:300px;
+	margin: 0px, 150px, 6px, 6px;
+
+}
+
+.update_feedback input[type=radio]{
+	width:20px;
+	margin: 0px, 2150px, 6px, 6px;
+}
+
+.update_feedback select{
+	width:300px;
+	margin: 0px, 150px, 6px, 6px;
+}
+
+.update_feedback input[type=submit]{
+	display:block;
+	width:200px;
+	margin-left: 206px;
+}
+

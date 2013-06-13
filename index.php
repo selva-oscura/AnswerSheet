@@ -14,6 +14,7 @@
 	<head>
 		<title>CodingDojo - AnswerSheet - Login</title>
 		<link rel="stylesheet" type="text/css" href="css/index.css">
+		<link rel="shortcut icon" href="img/favicon.ico">
 		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){

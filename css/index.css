@@ -6,6 +6,7 @@
 	vertical-align:baseline;
 	background-color: black;
 	color: white;
+	min-height: 1000px;
 	background-image: url('../img/coding_dojo_wallpaper.jpg');
 	background-size: 100% auto;
 	background-repeat: no-repeat;
@@ -39,7 +40,7 @@
 #body{
 	margin-left:auto;
 	margin-right:auto;
-	width:1100px;
+	width:375px;
 	height:700px;
 	overflow:auto;
 	line-height: 2.5;

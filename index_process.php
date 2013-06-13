@@ -19,11 +19,11 @@ class Process
 		if(count($users)>0)
 		{
 			$_SESSION['logged_in'] = true;
-			$_SESSION['user']['id'] = $users[0]['id'];
+			$_SESSION['user']['user_id'] = $users[0]['id'];
 			$_SESSION['user']['first_name'] = $users[0]['first_name'];
 			$_SESSION['user']['last_name'] = $users[0]['last_name'];
 			$_SESSION['user']['email'] = $users[0]['email'];
-			$_SESSION['user']['cohort'] = $users[0]['cohort'];
+			$_SESSION['user']['cohort'] = $users[0]['cohort_id'];
 			$_SESSION['user']['user_level'] = $users[0]['user_level'];
 			$data='<script type="text/javascript">parent.window.location.reload(true);</script>';
 			return $data;
