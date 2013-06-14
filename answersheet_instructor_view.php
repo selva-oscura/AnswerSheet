@@ -14,11 +14,13 @@
 	<head>
 		<title>CodingDojo - AnswerSheet - Instructor View</title>
 		<link rel="stylesheet" type="text/css" href="css/answersheet.css" />
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 		<link href="css/kendo.common.min.css" rel="stylesheet" />
 		<link href="css/kendo.uniform.min.css" rel="stylesheet" />
 		<link rel="shortcut icon" href="img/favicon.ico">
-		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
 		<script src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
 		<script src="js/kendo.web.min.js"></script>
 		<script>
 			$(document).ready(function() 
@@ -39,19 +41,72 @@
 					return false;
 				}); 
 				$(document).on('click', '.delete_button', function(event){
-					$('.delete_answer').on('submit', function(){
-						$.post(
-							$(this).attr('action'),
-							$(this).serialize(),
-							function(data)
-							{
-								$('#cohort_display').html(data);
+					// console.log;
+					event.preventDefault();
+					$('#delete_dialog').dialog(
+					{
+					    width: 400,
+					    modal: true,
+					    resizable: false,
+					    buttons: {
+							"Confirm Delete": function() {
+					        	$(this).dialog("close");
+					        	$('.delete_answer').submit();
+							},
+							"Cancel": function() {
+								$(this).dialog("close");
 							}
-							, "json"
-						)
-						return false;					
+						}
 					});
 				});
+
+$('.delete_answer').submit(function(e)
+{
+// e.preventDefault();
+// alert("submit");
+$.post(
+$(this).attr('action'),
+$(this).serialize(),function(data)
+{
+$('#cohort_display').html(data);
+}
+, "json"
+)
+return false;					
+});
+
+
+				// $('.delete_answer').submit(function(e)
+				// {
+				// 	// e.preventDefault();
+				// 	alert("submit");
+				// 	$.post(
+				// 		$(this).attr('action'),
+				// 		$(this).serialize(),function(data)
+				// 		{
+				// 			$('#cohort_display').html(data);
+				// 		}
+				// 		, "json"
+				// 	)
+				// 	return false;					
+				// });
+
+
+
+				// $(document).on('click', '.delete_button', function(event){
+				// 	$('.delete_answer').on('submit', function(){
+				// 		$.post(
+				// 			$(this).attr('action'),
+				// 			$(this).serialize(),
+				// 			function(data)
+				// 			{
+				// 				$('#cohort_display').html(data);
+				// 			}
+				// 			, "json"
+				// 		)
+				// 		return false;					
+				// 	});
+				// });				
 				$(document).on('click', '.new_button', function(event){
 					$('.new_answer').on('submit', function(){
 						$.post(
@@ -112,7 +167,7 @@
 				// create DateTimePicker from input HTML element
 				$(document).on('click', '#datetimepicker', function (){
 	                $('#datetimepicker').kendoDateTimePicker({
-	                	format: 'yyyy/MM/dd HH:mm:ss', 
+	                	format: 'yyyy-MM-dd HH:mm:ss', 
 	                	timeFormat: 'HH:mm',
 	                    value:new Date()
 	                });
@@ -145,12 +200,15 @@
 					<img src='img/coding_dojo_white.png' />
 					<h1>AnswerSheet</h1>
 					<div class='landing'>
-						<p><a href='logout_process.php'>Log Off</a></p>
-					</div>
-					<div class='landing'>
+						<ul>
+							<li><a href='logout_process.php'>Log Off</a></li>
+							<li><a href='answersheet_admin_view.php'>Admin Page</a> </li>
+							<li>
 <?php 
-						echo "<p>Welcome, " . $_SESSION['user']['first_name'] ."! </p>";
+						echo "Welcome, " . $_SESSION['user']['first_name'] ."!";
 ?>
+							</li>
+						</ul>
 					</div>
 				</div><!--end of div banner-->
 				<div id='body'>
@@ -158,11 +216,15 @@
 <!-- 					<div id='cohort_select'>
 						<h3>Select Location and Cohort</h3> -->
 						<div id='cohorts'>
+							<img src='img/yellow_1.png' width='90px' height='120px' alt='ninja image'/>
+							<h2>Select a Cohort:</h2> 
 <?php 
 							$display->cohortDropdown();
 ?>
-	 					</div>		
-<!-- 	 				</div> --><!--end of div cohort select-->
+	 					</div><!--end of div cohorts -->
+					<div style="height: auto; width: 250px; display: none;" class='ui-dialog' role="dialog" id="delete_dialog" title="Delete this answer?">
+						<p>This assignment feedback will be permanently deleted and cannot be recovered. Are you sure?</p>
+					</div>
 	 				<div id='cohort_display' class='clear'></div>
 				</div><!--end of div body-->
 			</div><!--end of div wrapper-->

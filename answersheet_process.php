@@ -1,5 +1,6 @@
 <?php 
 include("connection.php");
+// session_start();
 
 class Process
 {
@@ -45,7 +46,6 @@ Class Display extends Process
 		$query="SELECT schedules.id AS schedule_id, week, day, day_theme FROM schedules ORDER BY week, day ASC";
 		$weeks_days_themes = $this->connection->fetch_all($query);
 		$query="SELECT schedule_id, feedback_title, feedback_author, DATE(available_on) AS available_date, feedback_type, url, users.first_name AS first_name FROM answers LEFT JOIN schedules on schedules.id=answers.schedule_id LEFT JOIN users on users.id=answers.feedback_author WHERE (((answers.ind_or_cohort=1) AND (answers.recipient={$_SESSION['user']['id']})) OR ((answers.ind_or_cohort=2) AND (answers.recipient={$_SESSION['user']['cohort']}))) AND (answers.available_on <= NOW()) ORDER BY schedule_id, available_date ASC";
-		// echo $query;
 		$answers = $this->connection->fetch_all($query);
 		if(!(count($answers)>0))
 		{
@@ -99,7 +99,7 @@ Class Display extends Process
 		
 		$query="SELECT cohorts.id as cohort_id, location, start_date from cohorts WHERE cohorts.id>1 ORDER BY cohorts.start_date ASC";
 		$results = $this->connection->fetch_all($query);
-		$html = "<div id='cohort_select'><img src='img/yellow_1.png' width='90px' height='120px' alt='ninja image'/><h2>Select a Cohort:</h2> 
+		$html = "<div id='cohort_select'>
 			<form id='display_cohort' action='answersheet_process.php' method='post'>
 			<select name = 'cohort'>
 			<option value=''></option>";
@@ -113,6 +113,29 @@ Class Display extends Process
 		echo $html;
 	}
 
+	function cohortPlusInstructorsDropdown()
+	{
+		
+		$query="SELECT cohorts.id as cohort_id, location, start_date from cohorts ORDER BY cohorts.location, cohorts.start_date ASC";
+		$results = $this->connection->fetch_all($query);
+		$html = "
+			<select name = 'cohort'>
+			<option value=''></option>";
+		foreach($results as $cohort)
+		{
+			$html=$html . "<option value=" . $cohort['cohort_id'] . ">" . $cohort['location'] . " - " . $cohort['start_date'] . "</option>";
+		}
+		$html=$html . "</select></form>";
+		// eliminated after AJAXing of submit
+		// $html=$html . "<input type='submit' id='button' value='Display' />";  
+		echo $html;
+	}
+
+
+
+
+
+
 	function editAnswers()
 	{
 		$cohort=$_POST['cohort'];
@@ -123,7 +146,7 @@ Class Display extends Process
 		$query="SELECT schedules.id AS schedule_id, week, day, day_theme FROM schedules WHERE schedules.cohort_id={$_POST['cohort']} ORDER BY week, day ASC";
 		$weeks_days_themes = $this->connection->fetch_all($query);
 		$query="SELECT answers.id AS answer_id, schedule_id, feedback_title, feedback_author, ind_or_cohort, recipient AS recipient_id, DATE(available_on) AS available_date, available_on, feedback_type, url, users.first_name AS author_first_name, users.id AS authors_id, users.cohort_id FROM answers LEFT JOIN schedules on schedules.id=answers.schedule_id LEFT JOIN users on users.id=answers.feedback_author WHERE (((answers.ind_or_cohort=1) AND (answers.recipient IN (SELECT users.id FROM users WHERE cohort_id={$_POST['cohort']}))) OR ((answers.ind_or_cohort=2) AND (answers.recipient={$_POST['cohort']}))) AND (answers.available_on <= NOW()) ORDER BY schedule_id, available_date ASC";
-		$html= $query;
+		// $html= $query;
 		$answers = $this->connection->fetch_all($query);
 		$query="SELECT users.id AS user_id, first_name, last_name FROM users WHERE cohort_id={$_POST['cohort']}";
 		$students=$this->connection->fetch_all($query);
@@ -156,7 +179,7 @@ Class Display extends Process
 							if((isset($_POST['edit_answer'])) && (($answer['answer_id'])==($_POST['answer_id'])))
 							{
 								$html=$html . "<table class='assignment_space'><tbody><tr><td>
-									<fieldset class='update_feedback'>
+									<fieldset class='form_align'>
 									<form class='udpate_answer' action='answersheet_process.php' method='post'>
 									<input type='hidden' name='update_answer' />";
 // <input type='hidden' name='feedback_author' value='" . $_SESSION['user']['user_id'] . "'/> 
@@ -203,14 +226,6 @@ Class Display extends Process
 									$html=$html . ", code, ";
 								}
 								$html=$html . $answer['available_date'] . "</td>";
-								//Form to delete answer 
-								$html=$html . "<td class='right'>
-									<form class='delete_answer' action='answersheet_process.php' method='post'>
-									<input type='hidden' name='delete_answer' />
-									<input type='hidden' name='cohort' value='" . $cohort . "'/>	
-									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'/>
-									<input type='submit' class='delete_button' value='Delete' />
-									</form></td>";
 								//Form for requesting form to update answer 
 								$html=$html . "<td class='right'>
 									<form class='edit_answer' action='answersheet_process.php' method='post'>
@@ -218,6 +233,14 @@ Class Display extends Process
 									<input type='hidden' name='cohort' value='" . $cohort . "' />	
 									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "' />
 									<input type='submit' class='edit_button' value='Edit' />
+									</form>";
+								//Form to delete answer 
+								$html=$html . "
+									<form class='delete_answer' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='delete_answer' />
+									<input type='hidden' name='cohort' value='" . $cohort . "'/>	
+									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'/>
+									<input type='submit' class='delete_button' value='Delete' />
 									</form></td>
 									</tr></tbody></table>";
 							}							
@@ -231,10 +254,9 @@ Class Display extends Process
 					if((isset($_POST['new_answer'])) && (($week_day_theme['schedule_id'])==($_POST['schedule_id'])))
 					{
 						$html=$html . "<table class='assignment_space'><tbody><tr><td>
-							<fieldset class='update_feedback'>
+							<fieldset class='form_align'>
 							<form class='create_answer' action='answersheet_process.php' method='post'>
 							<input type='hidden' name='create_answer' />";
-//Need to add author's information, but it seems not to want to let me put the session information
 // <input type='hidden' name='feedback_author' value='" . $_SESSION['user']['user_id'] . "'/> 
 						$html=$html . "<input type='hidden' name='cohort' value='" . $_POST['cohort'] . "' />
 							<input type='hidden' name='schedule_id' value='" . $_POST['schedule_id'] . "' />
@@ -273,6 +295,78 @@ Class Display extends Process
 	}
 }
 
+Class Edit extends Process
+{
+
+	function searchUser(){
+		$query = "SELECT first_name, last_name, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE (first_name LIKE '{$_POST['name']}%' OR last_name LIKE '{$_POST['name']}%') ORDER BY last_name ASC";
+		$users = $this->connection->fetch_all($query);
+		$html = "<table id='user_table' border='1'>
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Location</th>
+					<th>Date of Cohort</th>
+				</tr>
+			</thead>
+			<tbody>
+		";
+		foreach($users as $user)
+		{
+			$html .= "
+				<tr>
+					<td>{$user['first_name']}</td>
+					<td>{$user['last_name']}</td>";
+			if($user['cohort_id']==1){
+				$html .= "<td>All</td>
+					<td>Instructor</td>
+				</tr>
+				";
+			}
+			else{
+			$html .= "<td>{$user['location']}</td>
+					<td>{$user['start_date']}</td>
+				</tr>
+				";				
+			}
+		}
+		$html .= "
+				</tbody>
+			</table>
+		";
+		$data['html'] = $html;
+		echo json_encode($data);
+		// echo json_encode($html);
+	}
+
+	function createCohort(){
+		$query="INSERT INTO cohorts (location, start_date, created_at) VALUES ('{$_POST['location']}', '{$_POST['start_date']}', NOW())";
+		mysql_query($query);
+		$query="SELECT * from cohorts WHERE location='{$_POST['location']}' AND start_date='{$_POST['start_date']}'";
+		$cohorts = $this->connection->fetch_all($query);
+		foreach($cohorts as $cohort)
+		{
+			foreach($cohort as $key => $value)
+			{
+				if($key=='id')
+				{
+					$cohort_id=$value;
+				}
+			}
+		}
+
+		for($week=1; $week<=9; $week++)
+		{
+			for($day=1; $day<=5; $day++)
+			{
+				$query="INSERT INTO schedules (cohort_id, week, day, created_at) VALUES ($cohort_id, $week, $day, NOW())";
+				mysql_query($query);
+			}
+		}
+	}
+}
+
 
 $display = new Display;
 
@@ -290,6 +384,7 @@ if(isset($_POST['edit_answer']))
 
 if(isset($_POST['delete_answer']))
 {
+
 	$query="DELETE FROM answers WHERE answers.id={$_POST['answer_id']}";
 	mysql_query($query);
 	$display->editAnswers();
@@ -305,6 +400,7 @@ if(isset($_POST['cohort']))
 if(isset($_POST['create_answer']))
 {
 var_dump($_POST);
+	unset($_POST);
 	// $query="INSERT INTO answers (feedback_title, feedback_author, recipient, available_on, feedback_type, url) VALUES ('{$_POST['feedback_title']}', '{$_POST['feedback_author']}', '{$_POST['recipient']}', '{$_POST['available_on']}', '{$_POST['feedback_type']}', '{$_POST['url']}')";
 	// $display->editAnswers();
 	// unset($_POST);
@@ -314,98 +410,27 @@ if(isset($_POST['update_answer']))
 {
 
 var_dump($_POST);
+	unset($_POST);
 	// $query="UPDATE answers SET feedback_title='{$_POST['feedback_title']}', feedback_author='{$_POST['feedback_author']}', recipient='{$_POST['recipient']}', available_on='{$_POST['available_on']}', feedback_type='{$_POST['feedback_type']}', url='{$_POST['url']}' WHERE answers.id='{$_POST['answer_id']}'";
 	// $display->editAnswers();
 	// unset($_POST);
 }
 
 
-// Class Table extends Process
-// {
-// 	function friendsTable()
-// 	{
-// 		$users=array();
-// 		$query = "SELECT CONCAT (users.first_name, ' ', users.last_name) AS name, users.email AS email FROM users LEFT JOIN friends ON friends.friend_id = users.id WHERE friends.user_id = {$_SESSION['user']['id']}";
-// 		$users = $this->connection->fetch_all($query);	
-// 		$html = "<table id='friendstable' class='tablesorter'> 
-// 				<thead> 
-// 					<tr> 
-// 					    <th>Name</th> 
-// 					    <th>E-mail</th> 
-// 					</tr> 
-// 				</thead> 
-// 				<tbody>";
-// 		if(!(count($users))>0)
-// 		{
-// 			$html=$html . "<tr><td>None</td><td> </td></tr>";
-// 		}
-// 		else
-// 		{
-// 			foreach($users as $friend)
-// 		{
-// 			$html=$html . "<tr><td>" . $friend['name'] . "</td><td>" . $friend['email'] . "</td></tr>";
-// 		}
-
-// 		}
-// 		$html=$html . "</tbody>
-// 			</table>";
-// 		echo $html;
-// 	}
-
-// 	function usersTable()
-// 	{
-// 		$users=array();
-// 		$query = "SELECT users.id, CONCAT (users.first_name, ' ', users.last_name) AS name, users.email AS email FROM users WHERE users.id <> {$_SESSION['user']['id']}";
-// 		$users = $this->connection->fetch_all($query);	
-// 		$html = "<table id='userstable' class='tablesorter'> 
-// 				<thead> 
-// 					<tr> 
-// 					    <th>Name</th> 
-// 					    <th>E-mail</th>
-// 					    <th>Action</th>
-// 					</tr> 
-// 				</thead> 
-// 				<tbody>";
-// 		foreach($users as $user)
-// 		{
-// 			$query="SELECT friends.user_id, friends.friend_id FROM friends WHERE ((friends.user_id={$_SESSION['user']['id']}) && (friends.friend_id={$user['id']}))";
-// 			$check=$this->connection->fetch_all($query);
-// 			if(count($check)>0)
-// 			{
-// 				$html=$html . "<tr><td>" . $user['name'] . "</td><td>" . $user['email'] . "</td><td> Friends </td></tr>";
-// 			}
-// 			else
-// 			{
-// 				$html=$html . "<tr><td>" . $user['name'] . "</td><td>" . $user['email'] . "</td><td>
-// 				<form id = 'friending' action='library.php' method='post'><input type='hidden' name='action' value='select_friend'><input type='hidden' name='user_id' value='" . $_SESSION['user']['id'] . "' /><input type='hidden' name='friend_id' value='" . $user['id'] . "'/><input type='submit' class='submit_button' value='Add as a Friend' /></form>
-// 				</td></tr>";	
-// 			}
-// 		}
-// 			$html=$html . "</tbody>
-// 		</table>";
-// 		echo $html;
-// 	}
-// }
 
 
+$edit = new Edit;
 
+if(isset($_POST['add_cohort']))
+{
+	$edit->createCohort();
+	unset($_POST);
+}
 
-// Class Friend extends Process
-// {
-// 	function addFriend()
-// 	{
-// 		$query="INSERT INTO friends (user_id, friend_id) VALUES ({$_POST['user_id']}, {$_POST['friend_id']})";
-// 		mysql_query($query);
-// 		$query="INSERT INTO friends (user_id, friend_id) VALUES ({$_POST['friend_id']}, {$_POST['user_id']})";
-// 		mysql_query($query);
-// 		header("location: main.php");
-// 	}
-// }
-
-// if(isset($_POST['action']) and $_POST['action'] == "select_friend")
-// {
-// 	$friend = new Friend;
-// 	$friend->addFriend();
-// }
+if(isset($_POST['search_users']))
+{
+	$edit->searchUser();
+	unset($_POST);
+}
 
 ?>
