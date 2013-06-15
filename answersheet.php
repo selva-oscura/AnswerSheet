@@ -1,5 +1,6 @@
 <?php
-	session_start();
+	include('answersheet_process.php');
+
 	// if(!isset($_SESSION['logged_in']))
 	// {
 	// 	header("location: index.php");
@@ -8,7 +9,6 @@
 	// {
 	// 	header("location: answersheet_instructor_view.php");
 	// }
-	include('answersheet_process.php');
 ?>
 <html>
 	<head>

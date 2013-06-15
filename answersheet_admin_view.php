@@ -1,5 +1,5 @@
 <?php
-	session_start();
+	include('answersheet_process.php');
 	if(!isset($_SESSION['logged_in']))
 	{
 		header("location: index.php");
@@ -8,7 +8,6 @@
 	{
 		header("location: answersheet.php");
 	}
-	include('answersheet_process.php');
 ?>
 <html>
 	<head>
@@ -29,10 +28,21 @@
 					value:new Date()
 				});
 
+				$('#search_by_cohort').submit(function(){
+					$.post(
+						$(this).attr('action'),
+						$(this).serialize(),
+						function(data){
+							$('#results').html(data.html);
+						},
+						"json"
+					);
+					return false;
+				});
+
 				$('#search_text').keyup(function(){
 					$('#search_users').submit();
 				});
-
 				$('#search_users').submit(function(){
 					$.post(
 						$(this).attr('action'),
@@ -101,30 +111,33 @@
 							<label>Start Date:</label><input id='datepicker' name='start_date'/><br />
 							<input type='submit' id='button' value='Add a New Cohort' />
 						</form>
+					</div><!--end of div form_align-->
 
 
 
 					<p>Edit or delete an existing user</p>
-					<ul>
-						<li>Search for user by cohort</li>
-						<div id='cohorts'>
-							<form id='search_by_cohort' action='answersheet_process.php' method='post'>
+					<p>Search for user by cohort</p>
+					<div class='form_align'>
+						<!-- <div id='cohorts'> -->
+						<form id='search_by_cohort' action='answersheet_process.php' method='post'>
+							<label></label>
+
 <?php 
-							$display->cohortPlusInstructorsDropdown();
+					$display->cohortPlusInstructorsDropdown();
 ?>
-	 						</form>
-	 					</div>
-<div id='cohort_display' class='clear'></div>
-						<li>Search for user by name</li>
-					</ul>
+						</form>
+ 						<!-- </div>end of div cohorts -->
+					<div id='cohort_display' class='clear'></div>
+ 					</div><!--end of div form_align-->
+					<p>Search for user by name</p>
 					<div class='form_align'>
 						<form id="search_users" action="answersheet_process.php" method="post">
 							<input type='hidden' name='search_users' />
 							<label>Name: </label><input id="search_text" type="text" name="name" />
 							<input type="submit" value="Submit" />
 						</form>
-						<div id="results"></div>
 					</div><!--end of div form_align-->
+					<div id="results"></div>
 
 
 
@@ -140,9 +153,8 @@
 							<input type='submit' id='button' value='Add a New Cohort' />
 						</form>
 					</div><!--end of div form_align -->
-					<p>Edit an existing cohort</p>
+					<p>Edit or delete an existing cohort</p>
 					<p>Edit the schedule of an existing cohort</p>
-					<p>Delete an existing cohort</p>
 				</div><!--end of div inset-->
 
 

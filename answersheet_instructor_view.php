@@ -1,5 +1,5 @@
 <?php
-	session_start();
+	include('answersheet_process.php');
 	if(!isset($_SESSION['logged_in']))
 	{
 		header("location: index.php");
@@ -8,7 +8,6 @@
 	{
 		header("location: answersheet.php");
 	}
-	include('answersheet_process.php');
 ?>
 <html>
 	<head>
@@ -40,73 +39,39 @@
 					);
 					return false;
 				}); 
-				$(document).on('click', '.delete_button', function(event){
-					// console.log;
-					event.preventDefault();
-					$('#delete_dialog').dialog(
-					{
-					    width: 400,
-					    modal: true,
-					    resizable: false,
-					    buttons: {
-							"Confirm Delete": function() {
-					        	$(this).dialog("close");
-					        	$('.delete_answer').submit();
-							},
-							"Cancel": function() {
-								$(this).dialog("close");
+
+				$(document).on('click', '.delete_request_button', function(event){
+					$('.delete_request').on('submit', function(){
+						$.post(
+							$(this).attr('action'),
+							$(this).serialize(),
+							function(data)
+							{
+								$('#cohort_display').html(data);
 							}
-						}
+							, "json"
+						)
+						return false;					
 					});
-				});
-
-$('.delete_answer').submit(function(e)
-{
-// e.preventDefault();
-// alert("submit");
-$.post(
-$(this).attr('action'),
-$(this).serialize(),function(data)
-{
-$('#cohort_display').html(data);
-}
-, "json"
-)
-return false;					
-});
-
-
-				// $('.delete_answer').submit(function(e)
-				// {
-				// 	// e.preventDefault();
-				// 	alert("submit");
-				// 	$.post(
-				// 		$(this).attr('action'),
-				// 		$(this).serialize(),function(data)
-				// 		{
-				// 			$('#cohort_display').html(data);
-				// 		}
-				// 		, "json"
-				// 	)
-				// 	return false;					
-				// });
+				});				
 
 
 
-				// $(document).on('click', '.delete_button', function(event){
-				// 	$('.delete_answer').on('submit', function(){
-				// 		$.post(
-				// 			$(this).attr('action'),
-				// 			$(this).serialize(),
-				// 			function(data)
-				// 			{
-				// 				$('#cohort_display').html(data);
-				// 			}
-				// 			, "json"
-				// 		)
-				// 		return false;					
-				// 	});
-				// });				
+				$(document).on('click', '.delete_button', function(event){
+					$('.delete_answer').on('submit', function(){
+						$.post(
+							$(this).attr('action'),
+							$(this).serialize(),
+							function(data)
+							{
+								$('#cohort_display').html(data);
+							}
+							, "json"
+						)
+						return false;					
+					});
+				});				
+
 				$(document).on('click', '.new_button', function(event){
 					$('.new_answer').on('submit', function(){
 						$.post(
@@ -213,19 +178,17 @@ return false;
 				</div><!--end of div banner-->
 				<div id='body'>
 <!--  					Choose Location and Cohort -->
-<!-- 					<div id='cohort_select'>
-						<h3>Select Location and Cohort</h3> -->
-						<div id='cohorts'>
-							<img src='img/yellow_1.png' width='90px' height='120px' alt='ninja image'/>
-							<h2>Select a Cohort:</h2> 
+					<div id='cohorts'>
+						<img src='img/yellow_1.png' width='90px' height='120px' alt='ninja image'/>
+						<h2>Select a Cohort:</h2> 
+						<div id='cohort_select'>
+							<form id='display_cohort' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='user_id' value=$_SESSION['user']['user_id']>
 <?php 
-							$display->cohortDropdown();
+						$display->cohortDropdown();
 ?>
-	 					</div><!--end of div cohorts -->
-					<div style="height: auto; width: 250px; display: none;" class='ui-dialog' role="dialog" id="delete_dialog" title="Delete this answer?">
-						<p>This assignment feedback will be permanently deleted and cannot be recovered. Are you sure?</p>
-					</div>
-	 				<div id='cohort_display' class='clear'></div>
+		 				<div id='cohort_display' class='clear'></div>
+ 					</div><!--end of div cohorts -->
 				</div><!--end of div body-->
 			</div><!--end of div wrapper-->
 		</div><!--end of div reset-->

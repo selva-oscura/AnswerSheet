@@ -1,4 +1,5 @@
 <?php 
+session_start();
 include("connection.php");
 // session_start();
 
@@ -18,7 +19,7 @@ Class Display extends Process
 	function recentAdditions()
 	{
 		$recent_additions=array();
-		$query="SELECT schedules.week, schedules.day, schedules.day_theme, feedback_title , feedback_author, DATE(available_on) AS available_date, users.first_name AS first_name FROM answers LEFT JOIN schedules on answers.schedule_id=schedules.id LEFT JOIN users ON users.id=answers.feedback_author WHERE (((answers.ind_or_cohort=1) AND (answers.recipient={$_SESSION['user']['id']})) OR ((answers.ind_or_cohort=2) AND (answers.recipient={$_SESSION['user']['cohort']}))) AND ((answers.available_on >= NOW()-INTERVAL 3 DAY) AND (answers.available_on <= NOW())) ORDER BY answers.available_on DESC";
+		$query="SELECT schedules.week, schedules.day, schedules.day_theme, feedback_title , feedback_author, DATE(available_on) AS available_date, users.first_name AS first_name FROM answers LEFT JOIN schedules on answers.schedule_id=schedules.id LEFT JOIN users ON users.id=answers.feedback_author WHERE (((answers.ind_or_cohort=1) AND (answers.recipient={$_SESSION['user']['user_id']})) OR ((answers.ind_or_cohort=2) AND (answers.recipient={$_SESSION['user']['cohort']}))) AND ((answers.available_on >= NOW()-INTERVAL 3 DAY) AND (answers.available_on <= NOW())) ORDER BY answers.available_on DESC";
 		$recent_additions = $this->connection->fetch_all($query);
 
 
@@ -45,8 +46,10 @@ Class Display extends Process
 		$html="";
 		$query="SELECT schedules.id AS schedule_id, week, day, day_theme FROM schedules ORDER BY week, day ASC";
 		$weeks_days_themes = $this->connection->fetch_all($query);
-		$query="SELECT schedule_id, feedback_title, feedback_author, DATE(available_on) AS available_date, feedback_type, url, users.first_name AS first_name FROM answers LEFT JOIN schedules on schedules.id=answers.schedule_id LEFT JOIN users on users.id=answers.feedback_author WHERE (((answers.ind_or_cohort=1) AND (answers.recipient={$_SESSION['user']['id']})) OR ((answers.ind_or_cohort=2) AND (answers.recipient={$_SESSION['user']['cohort']}))) AND (answers.available_on <= NOW()) ORDER BY schedule_id, available_date ASC";
+		$query="SELECT schedule_id, feedback_title, feedback_author, DATE(available_on) AS available_date, feedback_type, url, answers.ind_or_cohort AS ind_or_cohort, users.first_name AS first_name FROM answers LEFT JOIN schedules on schedules.id=answers.schedule_id LEFT JOIN users on users.id=answers.feedback_author WHERE (((answers.ind_or_cohort=1) AND (answers.recipient={$_SESSION['user']['user_id']})) OR ((answers.ind_or_cohort=2) AND (answers.recipient={$_SESSION['user']['cohort']}))) AND (answers.available_on <= NOW()) ORDER BY schedule_id, available_date ASC";
 		$answers = $this->connection->fetch_all($query);
+		$query="SELECT users.id AS user_id, first_name, last_name FROM users WHERE cohort_id={$_SESSION['user']['cohort']}";
+		$students=$this->connection->fetch_all($query);
 		if(!(count($answers)>0))
 		{
 			$html="<p>No answers have been posted yet.  Please check back soon.</p>";
@@ -72,6 +75,13 @@ Class Display extends Process
 						{
 							$assignment_count++;
 							$html=$html . "<table class='assignment_space'><tbody><tr><td>" . $answer['feedback_title'] . " from " . $answer['first_name'];
+							if($answer['ind_or_cohort']==1){
+								foreach($students as $student){
+									if(($student['user_id'])==$_SESSION['user']['user_id']){
+										$html=$html . " for " . $student['first_name'];
+									}
+								}
+							}
 							if($answer['feedback_type']==1)
 							{
 								$html=$html . ", video, " . $answer['available_date'] ."</td><td class='get_media'><a href='media/" . $answer['url'] . "' class='vid" . $vid . "' target='vid" . $vid . "'>View</td></tr></tbody></table><iframe name='vid" . $vid . "'id='vid" . $vid . "' frameborder='0' allowfullscreen></iframe>";
@@ -99,15 +109,15 @@ Class Display extends Process
 		
 		$query="SELECT cohorts.id as cohort_id, location, start_date from cohorts WHERE cohorts.id>1 ORDER BY cohorts.start_date ASC";
 		$results = $this->connection->fetch_all($query);
-		$html = "<div id='cohort_select'>
-			<form id='display_cohort' action='answersheet_process.php' method='post'>
-			<select name = 'cohort'>
+		// <div id='cohort_select'>
+		// 	<form id='display_cohort' action='answersheet_process.php' method='post'>
+		$html = "<select name = 'cohort'>
 			<option value=''></option>";
 		foreach($results as $cohort)
 		{
 			$html=$html . "<option value=" . $cohort['cohort_id'] . ">" . $cohort['location'] . " - " . $cohort['start_date'] . "</option>";
 		}
-		$html=$html . "</select></form></div>";
+		$html=$html . "</select>";
 		// eliminated after AJAXing of submit
 		// $html=$html . "<input type='submit' id='button' value='Display' />";  
 		echo $html;
@@ -130,11 +140,6 @@ Class Display extends Process
 		// $html=$html . "<input type='submit' id='button' value='Display' />";  
 		echo $html;
 	}
-
-
-
-
-
 
 	function editAnswers()
 	{
@@ -181,9 +186,9 @@ Class Display extends Process
 								$html=$html . "<table class='assignment_space'><tbody><tr><td>
 									<fieldset class='form_align'>
 									<form class='udpate_answer' action='answersheet_process.php' method='post'>
-									<input type='hidden' name='update_answer' />";
-// <input type='hidden' name='feedback_author' value='" . $_SESSION['user']['user_id'] . "'/> 
-								$html=$html . "<input type='hidden' name='cohort' value='". $cohort . "' />
+									<input type='hidden' name='update_answer' />
+									<input type='hidden' name='feedback_author' value='" . $_SESSION['user']['user_id'] . "'/> 
+									<input type='hidden' name='cohort' value='". $cohort . "' />
 									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "' />
 									<label>Feedback Title</label><input type='text' name='feedback_title' value='".$answer['feedback_title']."' /><br />
 									<label>Recipient</label><input type='text' name='recipient' value='".$answer['recipient_id']."' /><br />
@@ -234,15 +239,28 @@ Class Display extends Process
 									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "' />
 									<input type='submit' class='edit_button' value='Edit' />
 									</form>";
-								//Form to delete answer 
+								//Form to confirm deletion
+								if(isset($_POST['delete_request']) && ($answer['answer_id']==$_POST['answer_id'])){
 								$html=$html . "
 									<form class='delete_answer' action='answersheet_process.php' method='post'>
 									<input type='hidden' name='delete_answer' />
 									<input type='hidden' name='cohort' value='" . $cohort . "'/>	
 									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'/>
-									<input type='submit' class='delete_button' value='Delete' />
+									<input type='submit' class='delete_button' value='Confirm Deletion' />
+									</form></td>
+									</tr></tbody></table>";									
+								}
+								//Form to request deletion 
+								else{
+								$html=$html . "
+									<form class='delete_request' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='delete_request' />
+									<input type='hidden' name='cohort' value='" . $cohort . "'/>	
+									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'/>
+									<input type='submit' class='delete_request_button' value='Delete' />
 									</form></td>
 									</tr></tbody></table>";
+								}
 							}							
 						}
 					}							
@@ -256,9 +274,9 @@ Class Display extends Process
 						$html=$html . "<table class='assignment_space'><tbody><tr><td>
 							<fieldset class='form_align'>
 							<form class='create_answer' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='create_answer' />";
-// <input type='hidden' name='feedback_author' value='" . $_SESSION['user']['user_id'] . "'/> 
-						$html=$html . "<input type='hidden' name='cohort' value='" . $_POST['cohort'] . "' />
+							<input type='hidden' name='create_answer' />
+							<input type='hidden' name='feedback_author' value='" . $_SESSION['user']['user_id'] . "'/> 
+							<input type='hidden' name='cohort' value='" . $_POST['cohort'] . "' />
 							<input type='hidden' name='schedule_id' value='" . $_POST['schedule_id'] . "' />
 							<label>Feedback Title: </label><input type='text' name='feedback_title' /><br />
 							<label>Recipient: </label><select name = 'recipient'><option value='0'>entire cohort</option>";
@@ -299,8 +317,12 @@ Class Edit extends Process
 {
 
 	function searchUser(){
-		$query = "SELECT first_name, last_name, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE (first_name LIKE '{$_POST['name']}%' OR last_name LIKE '{$_POST['name']}%') ORDER BY last_name ASC";
+		$query = "SELECT users.id AS user_id, first_name, last_name, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE (first_name LIKE '{$_POST['name']}%' OR last_name LIKE '{$_POST['name']}%') ORDER BY last_name ASC";
 		$users = $this->connection->fetch_all($query);
+	// 	$edit->makeEditTable($users);
+	// }
+
+	// function makeEditTable(){
 		$html = "<table id='user_table' border='1'>
 			<thead>
 				<tr>
@@ -308,6 +330,8 @@ Class Edit extends Process
 					<th>Last Name</th>
 					<th>Location</th>
 					<th>Date of Cohort</th>
+					<th></th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -318,18 +342,33 @@ Class Edit extends Process
 				<tr>
 					<td>{$user['first_name']}</td>
 					<td>{$user['last_name']}</td>";
-			if($user['cohort_id']==1){
+			if($user['cohort_id']==1)
+			{
 				$html .= "<td>All</td>
-					<td>Instructor</td>
-				</tr>
-				";
+					<td>Instructor</td>";
 			}
-			else{
-			$html .= "<td>{$user['location']}</td>
-					<td>{$user['start_date']}</td>
-				</tr>
-				";				
+			else
+			{
+				$html .= "<td>{$user['location']}</td>
+					<td>{$user['start_date']}</td>";
 			}
+			$html .="
+					<td>
+						<form class='edit_user' action='answersheet_process.php' method='post'>
+							<input type='hidden' name='edit_user' />
+							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
+							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+							<input type='submit' class='edit_user_button' value='Edit' />
+						</form>
+					</td>
+					<td>
+						<form class='delete_user_request' action='answersheet_process.php' method='post'>
+							<input type='hidden' name='delete_user_request' />
+							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
+							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+							<input type='submit' class='delete_user_request_button' value='Delete' />
+						</form>
+					</td></tr>";	
 		}
 		$html .= "
 				</tbody>
@@ -382,9 +421,14 @@ if(isset($_POST['edit_answer']))
 	unset($_POST);
 }
 
+if(isset($_POST['delete_request']))
+{
+	$display->editAnswers();
+	unset($_POST);	
+}
+
 if(isset($_POST['delete_answer']))
 {
-
 	$query="DELETE FROM answers WHERE answers.id={$_POST['answer_id']}";
 	mysql_query($query);
 	$display->editAnswers();
@@ -424,6 +468,12 @@ $edit = new Edit;
 if(isset($_POST['add_cohort']))
 {
 	$edit->createCohort();
+	unset($_POST);
+}
+
+if(isset($_POST['search_by_cohort']))
+{
+	$edit->searchByCohort();
 	unset($_POST);
 }
 

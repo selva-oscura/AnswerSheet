@@ -3,8 +3,8 @@
 	width:100%;
 	height:auto;
 	padding-bottom: 120px;
-	background-image:url('../img/red_2_flip.png');
-	background-size:110px 110px;
+	background-image:url('../img/red_2_flip.png')
+;	background-size:110px 110px;
 	background-repeat:no-repeat;
 	background-position:100% 100%;
 	z-index:1;
@@ -53,13 +53,20 @@
 
 .landing{
 	height:100px;
-	width:280px;
+	width:550px;
 	float:right;
+	font-size: 16pt;
+	text-shadow: 2px 2px #000000;
 }
 
-.landing p{
-	margin:80px 50px 0px 0px;
-	float: right;
+.landing ul{
+	list-style-type: none;
+}
+
+.landing li{
+	display: inline;
+	float:right;
+	margin:45px 20px 0px 10px;
 }
 
 .landing a:link {
@@ -73,6 +80,7 @@
 #body{
 	margin-left:auto;
 	margin-right:auto;
+	padding:12px;
 	width:1000px;
 	min-height: 600px;
 	overflow:auto;
@@ -153,6 +161,10 @@ p{
 	cursor:pointer;
 }
 
+.inset{
+	width:750px;
+	margin:12px;
+}
 
 .clear{
 	clear:both;
@@ -195,9 +207,13 @@ p{
 }
 
 .right{
-	width: 60px;
+	width: 200px;
 	float: right;
 	text-align: right;
+}
+
+.right form{
+	display: inline-block;
 }
 
 
@@ -259,35 +275,50 @@ iframe{
 	color: #FFFFFF;
 }
 
-.update_feedback label, .update_feedback input{
+#user_table{
+	margin-left: 200px;
+}
+
+#user_table th, #user_table td{
+	padding: 6px;
+/*	border:1px solid black;*/
+}
+
+.form_align label, .form_align input{
 	display:inline-block;
 }
 
-.update_feedback label{
+.form_align label{
 	width:200px;
 	text-align: right;
 	margin-right:6px;
 }
 
-.update_feedback input{
+.form_align input{
 	width:300px;
 	margin: 0px, 150px, 6px, 6px;
 
 }
 
-.update_feedback input[type=radio]{
+.form_align input[type=radio]{
 	width:20px;
 	margin: 0px, 2150px, 6px, 6px;
 }
 
-.update_feedback select{
+.form_align select{
 	width:300px;
 	margin: 0px, 150px, 6px, 6px;
 }
 
-.update_feedback input[type=submit]{
+.form_align input[type=submit]{
 	display:block;
 	width:200px;
 	margin-left: 206px;
 }
 
+.delete_button{
+	background-image: url('../img/red_gradient_24.png');
+	background-repeat:repeat-x;
+	border:1px solid black;
+	color:white;
+}
