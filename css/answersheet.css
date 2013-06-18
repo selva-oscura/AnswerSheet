@@ -162,7 +162,7 @@ p{
 }
 
 .inset{
-	width:750px;
+	width:900px;
 	margin:12px;
 }
 
@@ -276,7 +276,7 @@ iframe{
 }
 
 #user_table{
-	margin-left: 200px;
+	margin-left: 100px;
 }
 
 #user_table th, #user_table td{
@@ -284,12 +284,20 @@ iframe{
 /*	border:1px solid black;*/
 }
 
+td.min_width{
+	width: 150px;
+}
+
+td.mid_width{
+	width: 250px;
+}
+
 .form_align label, .form_align input{
 	display:inline-block;
 }
 
 .form_align label{
-	width:200px;
+	width:100px;
 	text-align: right;
 	margin-right:6px;
 }

@@ -183,6 +183,7 @@
 						<h2>Select a Cohort:</h2> 
 						<div id='cohort_select'>
 							<form id='display_cohort' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='display_cohort' />
 								<input type='hidden' name='user_id' value=$_SESSION['user']['user_id']>
 <?php 
 						$display->cohortDropdown();

@@ -135,7 +135,7 @@ Class Display extends Process
 		{
 			$html=$html . "<option value=" . $cohort['cohort_id'] . ">" . $cohort['location'] . " - " . $cohort['start_date'] . "</option>";
 		}
-		$html=$html . "</select></form>";
+		$html=$html . "</select>";
 		// eliminated after AJAXing of submit
 		// $html=$html . "<input type='submit' id='button' value='Display' />";  
 		echo $html;
@@ -316,69 +316,6 @@ Class Display extends Process
 Class Edit extends Process
 {
 
-	function searchUser(){
-		$query = "SELECT users.id AS user_id, first_name, last_name, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE (first_name LIKE '{$_POST['name']}%' OR last_name LIKE '{$_POST['name']}%') ORDER BY last_name ASC";
-		$users = $this->connection->fetch_all($query);
-	// 	$edit->makeEditTable($users);
-	// }
-
-	// function makeEditTable(){
-		$html = "<table id='user_table' border='1'>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Location</th>
-					<th>Date of Cohort</th>
-					<th></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-		";
-		foreach($users as $user)
-		{
-			$html .= "
-				<tr>
-					<td>{$user['first_name']}</td>
-					<td>{$user['last_name']}</td>";
-			if($user['cohort_id']==1)
-			{
-				$html .= "<td>All</td>
-					<td>Instructor</td>";
-			}
-			else
-			{
-				$html .= "<td>{$user['location']}</td>
-					<td>{$user['start_date']}</td>";
-			}
-			$html .="
-					<td>
-						<form class='edit_user' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='edit_user' />
-							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
-							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
-							<input type='submit' class='edit_user_button' value='Edit' />
-						</form>
-					</td>
-					<td>
-						<form class='delete_user_request' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='delete_user_request' />
-							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
-							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
-							<input type='submit' class='delete_user_request_button' value='Delete' />
-						</form>
-					</td></tr>";	
-		}
-		$html .= "
-				</tbody>
-			</table>
-		";
-		$data['html'] = $html;
-		echo json_encode($data);
-		// echo json_encode($html);
-	}
-
 	function createCohort(){
 		$query="INSERT INTO cohorts (location, start_date, created_at) VALUES ('{$_POST['location']}', '{$_POST['start_date']}', NOW())";
 		mysql_query($query);
@@ -403,6 +340,114 @@ Class Edit extends Process
 				mysql_query($query);
 			}
 		}
+		$html="New cohort created for " . $_POST['location'] . ", starting " . $_POST['start_date'] . ".";
+		echo json_encode($html);
+	}
+
+	function searchUser(){
+		$query = "SELECT users.id AS user_id, first_name, last_name, email, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE (first_name LIKE '{$_POST['name']}%' OR last_name LIKE '{$_POST['name']}%') ORDER BY last_name ASC";
+		$users = $this->connection->fetch_all($query);
+		$this->makeEditTable($users);
+	}
+
+	function searchByCohort(){
+		$query = "SELECT users.id AS user_id, first_name, last_name, email, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE cohort_id='{$_POST['cohort']}' ORDER BY last_name, first_name ASC";
+		$users = $this->connection->fetch_all($query);
+		$this->makeEditTable($users);
+	}
+
+	function makeEditTable($users_param){
+		$html = "<table id='user_table' border='1'>
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>E-mail Address</th>
+					<th>Cohort</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+		";
+		foreach($users_param as $user)
+		{
+			$html .= "
+				<tr>
+					<td class='min_width'>{$user['first_name']}</td>
+					<td class='min_width'>{$user['last_name']}</td>
+					<td>{$user['email']}</td>";
+			if($user['cohort_id']==1)
+			{
+				$html .= "<td class='min_width'>Instructor</td>";
+			}
+			else
+			{
+				$html .= "<td class='mid_width'>{$user['location']} - {$user['start_date']}</td>";
+			}
+			$html .="
+					<td>
+						<form class='edit_user' action='answersheet_process.php' method='post'>
+							<input type='hidden' name='edit_user' />
+							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
+							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+							<input type='submit' class='edit_user_button' value='Edit' />
+						</form>
+					</td>
+					<td>
+						<form class='delete_user_request' action='answersheet_process.php' method='post'>
+							<input type='hidden' name='delete_user_request' />
+							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
+							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+							<input type='submit' class='delete_user_request_button' value='Delete' />
+						</form>
+					</td></tr>";	
+		}
+		$html .= "
+				</tbody>
+			</table>";
+
+		$data['html'] = $html;
+		echo json_encode($data);
+		// echo json_encode($html);
+	}
+
+	function addUser()
+	{
+		$query="INSERT INTO users (first_name, last_name, email, cohort_id, created_at) VALUES ('{$_POST['first_name']}', '{$_POST['last_name']}', '{$_POST['email']}', '{$_POST['cohort']}', NOW())";
+		mysql_query($query);
+		$html="New user ..need to pull info from database to check and have cohort location and date....default password?";
+		echo json_encode($html);
+
+	}
+
+	function scheduleDisplay()
+	{
+		$cohort=$_POST['cohort'];
+		$weeks_days_themes=array();
+		$answers=array();
+		$html="";
+		$query="SELECT schedules.id AS schedule_id, week, day, day_theme FROM schedules WHERE schedules.cohort_id={$_POST['cohort']} ORDER BY week, day ASC";
+		$weeks_days_themes = $this->connection->fetch_all($query);
+
+		$week=0;
+		$day=0;	
+		foreach($weeks_days_themes as $week_day_theme)
+		{
+			if($week_day_theme['week']>$week)
+			{
+				$html=$html ."<h3 id='week" . $week_day_theme['week'] . "' class='week_bar'>Week " . $week_day_theme['week'] . "</h3>";
+				$week=$week_day_theme['week'];
+			}
+			if(!($week_day_theme['day']==$day))
+			{
+				$html=$html ."<div class='week" . $week_day_theme['week'] . "'><p class='day_bar wk" . $week_day_theme['week'] . "'>Day " . $week_day_theme['day'] . " - " . $week_day_theme['day_theme'] . "</p>";
+				$day=$week_day_theme['day'];
+				$schedule_id=$week_day_theme['schedule_id'];
+				$html=$html . "</div><!--end of day " . $day . "-->";
+			}
+		}
+		echo json_encode($html);
 	}
 }
 
@@ -435,7 +480,7 @@ if(isset($_POST['delete_answer']))
 	unset($_POST);
 }
 
-if(isset($_POST['cohort']))
+if(isset($_POST['display_cohort']))
 {
 	$display->editAnswers();
 	unset($_POST);	
@@ -465,6 +510,14 @@ var_dump($_POST);
 
 $edit = new Edit;
 
+
+if(isset($_POST['add_user']))
+{
+	$edit->addUser();
+	unset($_POST);
+}
+
+
 if(isset($_POST['add_cohort']))
 {
 	$edit->createCohort();
@@ -482,5 +535,12 @@ if(isset($_POST['search_users']))
 	$edit->searchUser();
 	unset($_POST);
 }
+
+if(isset($_POST['select_cohort_schedule']))
+{
+	$edit->scheduleDisplay();
+	unset($_POST);
+}
+
 
 ?>
