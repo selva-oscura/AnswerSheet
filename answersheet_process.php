@@ -414,11 +414,58 @@ Class Edit extends Process
 
 	function addUser()
 	{
-		$query="INSERT INTO users (first_name, last_name, email, cohort_id, created_at) VALUES ('{$_POST['first_name']}', '{$_POST['last_name']}', '{$_POST['email']}', '{$_POST['cohort']}', NOW())";
-		mysql_query($query);
-		$html="New user ..need to pull info from database to check and have cohort location and date....default password?";
-		echo json_encode($html);
+		$error_messages=array();
+		if((strlen($_POST['first_name'])) == 0)
+		{
+			array_push($error_messages, 'Please enter a first name.');    //was left blank
+		}
+		if((strlen($_POST['last_name'])) == 0)
+		{
+			array_push($error_messages, 'Please enter a last name.');    //was left blank
+		}
+		if((strlen($_POST['cohort'])) == 0)
+		{
+			array_push($error_messages, 'Please enter a cohort.');    //was left blank
+		}
+		if(!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL))    //bad e-mail address
+		{
+			array_push($error_messages, 'Please enter a correct e-mail address.');
+		}
+		if(!(empty($error_messages))){
+			$html="<div id ='error'>";
+			foreach($error_messages as $error_message){
+				$html.= $error_message . "<br />";
+			}
+			$html.="</div>";
+		}
+		else{
+			$query="SELECT first_name, last_name, email FROM users WHERE first_name='{$_POST['first_name']}' AND last_name='{$_POST['last_name']}' and email='{$_POST['email']}'";
+			$check=$this->connection->fetch_all($query);
 
+			if(count($check)>0)
+			{
+				$html="<div id='error'>This user's name and e-mail are already registered.</div>";
+			}
+			else{
+				$password='password';
+				if($_POST['cohort']==1)
+				{
+					$user_level=2;
+				}
+				else{
+					$user_level=1;
+				}
+				$query="INSERT INTO users (first_name, last_name, email, password, user_level, cohort_id, created_at) VALUES ('{$_POST['first_name']}', '{$_POST['last_name']}', '{$_POST['email']}', '".md5('coding88' . $password . 'y15u01vb0')."', " . $user_level . ", '{$_POST['cohort']}', NOW())";
+				mysql_query($query);
+				$query="SELECT first_name, last_name, email, cohort_id, cohorts.location AS location, cohorts.start_date FROM users LEFT JOIN cohorts on users.cohort_id=cohorts.id WHERE first_name='{$_POST['first_name']}' AND last_name='{$_POST['last_name']}' and email='{$_POST['email']}'";
+				$validation=$this->connection->fetch_all($query);
+				foreach($validation as $validate){
+					$html="<div id='success'>New user, " . $validate['first_name'] . " " . $validate['last_name'] . " was added to the " . $validate['location'] . " " . $validate['start_date'] . " cohort.  Password was initialized as " . $password . ".</div>";
+				}
+			}
+			
+		}
+		echo json_encode($html);
 	}
 
 	function scheduleDisplay()

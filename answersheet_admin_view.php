@@ -28,7 +28,6 @@
 				});
 
 				$('#add_user').submit(function(){
-					console.log;
 					$.post(
 						$(this).attr('action'),
 						$(this).serialize(),
@@ -40,12 +39,10 @@
 					return false;
 				});
 
-
 				$('#search_by_cohort').change(function(){
 					$('#search_by_cohort').submit();
 				});
 				$('#search_by_cohort').submit(function(){
-					console.log;
 					$.post(
 						$(this).attr('action'),
 						$(this).serialize(),
@@ -57,9 +54,10 @@
 					return false;
 				});
 
-				$('#search_text').keyup(function(){
-					$('#search_users').submit();
-				});
+				// $('#search_text').keyup(function(){
+				// 	console.log;
+				// 	$('#search_users').submit();
+				// });
 				$('#search_users').submit(function(){
 					$.post(
 						$(this).attr('action'),
@@ -111,10 +109,6 @@
 					);
 					return false;
 				});
-
-
-
-
 			});
 		</script>
 	</head>
@@ -137,88 +131,103 @@
 					</div>
 				</div><!--end of div banner-->
 				<div id='body'>
-				<h2>Users</h2>
-					<div class='inset'>
-						<p>Add a new user</p>
-						<div class='form_align'>
-							<form id='add_user' action='answersheet_process.php' method='post'>
-								<input type='hidden' name='add_user' />
-								<label>First Name:</label><input type='text' name='first_name' /><br />
-								<label>Last Name:</label><input type='text' name='last_name' /><br />
-								<label>E-mail address:</label><input type='text' name='email' /><br />
-								<label>Cohort:</label>
-	<?php 
-								$display->cohortPlusInstructorsDropdown();
-	?>
+					<div class='cat_header'><h2>Users</h2></div>
+					<div class='col_1'>
+						<div class='inset'>
+							<p>Add a new user</p>
+							<div class='form_align'>
+								<form id='add_user' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='add_user' />
+									<label>First Name:</label><input type='text' name='first_name' /><br />
+									<label>Last Name:</label><input type='text' name='last_name' /><br />
+									<label>E-mail address:</label><input type='text' name='email' /><br />
+									<label>Cohort:</label>
+<?php 
+									$display->cohortPlusInstructorsDropdown();
+?>
 
-								<input type='submit' id='button' value='Add this User' />
-							</form>
-							<div id='add_user_response'></div>
-						</div><!--end of div form_align-->
-
-
-
-						<p>Edit or delete an existing user</p>
-						<p>Search for user by cohort</p>
-						<div class='form_align'>
-							<form id='search_by_cohort' action='answersheet_process.php' method='post'>
-								<input type='hidden' name='search_by_cohort' />
-								<label></label>
-
-	<?php 
-						$display->cohortPlusInstructorsDropdown();
-	?>
-								<input type="submit" value="Submit" />
-							</form>
-							<!-- <div id='cohort_display' class='clear'></div> -->
-	 					</div><!--end of div form_align-->
-						<p>Search for user by name</p>
-						<div class='form_align'>
-							<form id="search_users" action="answersheet_process.php" method="post">
-								<input type='hidden' name='search_users' />
-								<label>Name: </label><input id="search_text" type="text" name="name" />
-								<input type="submit" value="Submit" />
-							</form>
-						</div><!--end of div form_align-->
-						<div id="results"></div>
+									<input type='submit' id='button' value='Add this User' />
+								</form>
+								<div id='add_user_response'></div>
+							</div><!--end of div form_align-->
 						</div><!--end of div inset-->
+					</div><!--end of div col_1-->
+
+
+
+					<div class='col_2'>
+						<div class='inset'>
+							<p>Edit or delete an existing user</p>
+							<ul>
+								<li>Search for user by cohort</li>
+							</ul>
+							<div class='form_align'>
+								<form id='search_by_cohort' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='search_by_cohort' />
+									<label></label>
+
+<?php 
+									$display->cohortPlusInstructorsDropdown();
+?>
+									<input type="submit" value="Submit" />
+								</form>
+		 					</div><!--end of div form_align-->
+		 					<ul>
+								<li>Search for user by name</li>
+							</ul>
+							<div class='form_align'>
+								<form id="search_users" action="answersheet_process.php" method="post">
+									<input type='hidden' name='search_users' />
+									<label>Name: </label><input id="search_text" type="text" name="name" />
+									<input type="submit" value="Submit" />
+								</form>
+							</div><!--end of div form_align-->
+						</div><!--end of div inset-->
+					</div><!--end of div col_2-->
+					<div class='clear'></div>
+					<div id="results"></div>
 					
-					<h2>Cohorts and Course Schedule</h2>
-					<div class='inset'>
-						<p>Add a new cohort</p>
-						<div class='form_align'>
-							<form id='add_cohort' action='answersheet_process.php' method='post'>
-								<input type='hidden' name='add_cohort' />
-								<label>Location:</label><input type='text' name='location' /><br />
-								<label>Start Date:</label><input id='datepicker' name='start_date'/><br />
-								<input type='submit' id='button' value='Add a New Cohort' />
-							</form>
-						</div><!--end of div form_align -->
-						<div id='add_cohort_response'></div>
-						<p>Edit or delete an existing cohort</p>
-						<p>Edit the schedule of an existing cohort</p>
-
-
-						<div class='form_align'>
-						<form id='select_cohort_schedule' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='select_cohort_schedule' />
-							<label></label>
-
+					<div class='cat_header'><h2>Cohorts and Course Schedule</h2></div>
+					<div class='col_1'>
+						<div class='inset'>
+							<p>Add a new cohort</p>
+							<div class='form_align'>
+								<form id='add_cohort' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='add_cohort' />
+									<label>Location:</label><input type='text' name='location' /><br />
+									<label>Start Date:</label><input id='datepicker' name='start_date'/><br />
+									<input type='submit' id='button' value='Add a New Cohort' />
+								</form>
+							</div><!--end of div form_align -->
+							<div id='add_cohort_response'></div>
+						</div><!--end of div inset-->
+					</div><!--end of div class='col_1'-->
+					<div class='col_2'>
+						<div class='inset'>
+							<p>Edit the schedule of an existing cohort</p>
+							<div class='form_align'>
+								<form id='select_cohort_schedule' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='select_cohort_schedule' />
+									<label></label>	
 <?php 
 					$display->cohortDropdown();
 ?>
-							<input type="submit" value="Submit" />
-						</form>
-						<div id='show_cohort_schedule'></div>
-						<!-- <div id='cohort_display' class='clear'></div> -->
- 					</div><!--end of div form_align-->
+									<input type="submit" value="Submit" />
+								</form>
 
-					</div><!--end of div inset-->
+	 						</div><!--end of div form_align-->
+	 					</div><!--end of div inset-->
+					</div><!--end of div class='col_2'-->
+					<div class='clear'></div>
+					<div id='show_cohort_schedule'></div>
+					<div class='col_1'>
+						<div class='inset'>
+							<p>Edit or delete an existing cohort</p>
+						</div><!--end of div inset-->
+					</div><!--end of div class='col_1'-->
+					<div class='clear'></div>					
 				</div><!--end of div body-->
 			</div><!--end of div wrapper-->
 		</div><!--end of div reset-->
-		<div style='display:none;' id="dialog-confirm" title="Delete this answer?">
-			<p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>This assignment feedback will be permanently deleted and cannot be recovered. Are you sure?</p>
-		</div>
 	</body>
 </html>
