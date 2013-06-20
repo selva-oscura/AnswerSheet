@@ -54,10 +54,10 @@
 					return false;
 				});
 
-				// $('#search_text').keyup(function(){
-				// 	console.log;
-				// 	$('#search_users').submit();
-				// });
+				$('#search_text').keyup(function(){
+					console.log;
+					$('#search_users').submit();
+				});
 				$('#search_users').submit(function(){
 					$.post(
 						$(this).attr('action'),
@@ -70,6 +70,50 @@
 					return false;
 				});
 
+				$(document).on('click', '.edit_user_button', function(event){
+					$('.edit_user').on('submit', function(){
+						$.post(
+							$(this).attr('action'),
+							$(this).serialize(),
+							function(data){
+								$('#results').html(data.html);
+							}
+							, "json"
+						)
+						return false;					
+					});
+				});	
+
+				$(document).on('click', '.delete_user_request_button', function(event){
+					$('.delete_user_request').on('submit', function(){
+						$.post(
+							$(this).attr('action'),
+							$(this).serialize(),
+							function(data){
+								$('#results').html(data.html);
+							}
+							, "json"
+						)
+						return false;					
+					});
+				});	
+
+				$(document).on('click', '.delete_user_button', function(event){
+					$('.delete_user').on('submit', function(){
+						$.post(
+							$(this).attr('action'),
+							$(this).serialize(),
+							function(data){
+								$('#results').html(data.html);
+							}
+							, "json"
+						)
+						return false;					
+					});
+				});	
+
+
+
 				$('#display_cohort').change(function(){
 					$('#display_cohort').submit();
 				});
@@ -77,8 +121,7 @@
 					$.post(
 						$(this).attr('action'),
 						$(this).serialize(),
-						function(data)
-						{
+						function(data){
 							$('#cohort_display').html(data);
 						}
 						, "json"

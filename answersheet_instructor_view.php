@@ -53,9 +53,7 @@
 						)
 						return false;					
 					});
-				});				
-
-
+				});	
 
 				$(document).on('click', '.delete_button', function(event){
 					$('.delete_answer').on('submit', function(){

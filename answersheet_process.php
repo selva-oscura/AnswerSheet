@@ -316,102 +316,6 @@ Class Display extends Process
 Class Edit extends Process
 {
 
-	function createCohort(){
-		$query="INSERT INTO cohorts (location, start_date, created_at) VALUES ('{$_POST['location']}', '{$_POST['start_date']}', NOW())";
-		mysql_query($query);
-		$query="SELECT * from cohorts WHERE location='{$_POST['location']}' AND start_date='{$_POST['start_date']}'";
-		$cohorts = $this->connection->fetch_all($query);
-		foreach($cohorts as $cohort)
-		{
-			foreach($cohort as $key => $value)
-			{
-				if($key=='id')
-				{
-					$cohort_id=$value;
-				}
-			}
-		}
-
-		for($week=1; $week<=9; $week++)
-		{
-			for($day=1; $day<=5; $day++)
-			{
-				$query="INSERT INTO schedules (cohort_id, week, day, created_at) VALUES ($cohort_id, $week, $day, NOW())";
-				mysql_query($query);
-			}
-		}
-		$html="New cohort created for " . $_POST['location'] . ", starting " . $_POST['start_date'] . ".";
-		echo json_encode($html);
-	}
-
-	function searchUser(){
-		$query = "SELECT users.id AS user_id, first_name, last_name, email, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE (first_name LIKE '{$_POST['name']}%' OR last_name LIKE '{$_POST['name']}%') ORDER BY last_name ASC";
-		$users = $this->connection->fetch_all($query);
-		$this->makeEditTable($users);
-	}
-
-	function searchByCohort(){
-		$query = "SELECT users.id AS user_id, first_name, last_name, email, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE cohort_id='{$_POST['cohort']}' ORDER BY last_name, first_name ASC";
-		$users = $this->connection->fetch_all($query);
-		$this->makeEditTable($users);
-	}
-
-	function makeEditTable($users_param){
-		$html = "<table id='user_table' border='1'>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>E-mail Address</th>
-					<th>Cohort</th>
-					<th></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-		";
-		foreach($users_param as $user)
-		{
-			$html .= "
-				<tr>
-					<td class='min_width'>{$user['first_name']}</td>
-					<td class='min_width'>{$user['last_name']}</td>
-					<td>{$user['email']}</td>";
-			if($user['cohort_id']==1)
-			{
-				$html .= "<td class='min_width'>Instructor</td>";
-			}
-			else
-			{
-				$html .= "<td class='mid_width'>{$user['location']} - {$user['start_date']}</td>";
-			}
-			$html .="
-					<td>
-						<form class='edit_user' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='edit_user' />
-							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
-							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
-							<input type='submit' class='edit_user_button' value='Edit' />
-						</form>
-					</td>
-					<td>
-						<form class='delete_user_request' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='delete_user_request' />
-							<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />	
-							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
-							<input type='submit' class='delete_user_request_button' value='Delete' />
-						</form>
-					</td></tr>";	
-		}
-		$html .= "
-				</tbody>
-			</table>";
-
-		$data['html'] = $html;
-		echo json_encode($data);
-		// echo json_encode($html);
-	}
-
 	function addUser()
 	{
 		$error_messages=array();
@@ -467,6 +371,137 @@ Class Edit extends Process
 		}
 		echo json_encode($html);
 	}
+
+	function searchUser()
+	{
+		$first_name_check=$_POST['name'];
+		$last_name_check=$_POST['name'];
+		$messy_condition="(first_name LIKE '" . $first_name_check . "%' OR last_name LIKE '" . $last_name_check . "%')";
+		$condition=str_replace('"', "", $messy_condition);
+		$this->editUserTable($condition);
+	}
+
+	function searchByCohort()
+	{
+		$cohort_check=$_POST['cohort'];
+		$condition="cohort_id=" . $cohort_check;
+		$this->editUserTable($condition);
+	}
+
+	function editUserTable($param)
+	{
+		if(isset($_POST['delete_user_request']) OR (isset($_POST['edit_user'])) OR (isset($_POST['delete_user'])))
+		{
+			$param=$_POST['condition'];
+		}
+		$query = "SELECT users.id AS user_id, first_name, last_name, email, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE " . $param . " ORDER BY last_name ASC";
+		$users = $this->connection->fetch_all($query);
+		$html = $param . $query . "<table id='user_table' border='1'>
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>E-mail Address</th>
+					<th>Cohort</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+		";
+		foreach($users as $user)
+		{
+			$html .= "
+				<tr>
+					<td class='min_width'>{$user['first_name']}</td>
+					<td class='min_width'>{$user['last_name']}</td>
+					<td>{$user['email']}</td>";
+			if($user['cohort_id']==1)
+			{
+				$html .= "<td class='min_width'>Instructor</td>";
+			}
+			else
+			{
+				$html .= "<td class='mid_width'>{$user['location']} - {$user['start_date']}</td>";
+			}
+			$html .="
+					<td>
+						<form class='edit_user' action='answersheet_process.php' method='post'>
+							<input type='hidden' name='edit_user' />";
+			$html .='		<input type="hidden" name="condition" value="' . $param . '" />';
+			$html .="		<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />
+							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+							<input type='submit' class='edit_user_button' value='Edit' />
+						</form>
+					</td>";
+			//Form to confirm deletion of user
+			if(isset($_POST['delete_user_request']) && ($user['user_id']==$_POST['user_id']))
+			{
+				$html .="
+						<td>
+							<form class='delete_user' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='delete_user' />";
+				$html .='		<input type="hidden" name="condition" value="' . $param . '" />';
+				$html .="		<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />
+								<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+								<input type='submit' class='delete_user_button' value='Confirm Deletion' />
+							</form>
+						</td></tr>";	
+			}
+			//Form to request deletion of user 
+			else
+			{
+				$html .="
+						<td>
+							<form class='delete_user_request' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='delete_user_request' />";
+				$html .='		<input type="hidden" name="condition" value="' . $param . '" />';
+				$html .="		<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />
+								<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+								<input type='submit' class='delete_user_request_button' value='Delete' />
+							</form>
+						</td></tr>";	
+			}
+		}
+		$html .= "
+				</tbody>
+			</table>";
+
+		$data['html'] = $html;
+		echo json_encode($data);
+		// echo json_encode($html);
+	}
+
+
+	function createCohort()
+	{
+		$query="INSERT INTO cohorts (location, start_date, created_at) VALUES ('{$_POST['location']}', '{$_POST['start_date']}', NOW())";
+		mysql_query($query);
+		$query="SELECT * from cohorts WHERE location='{$_POST['location']}' AND start_date='{$_POST['start_date']}'";
+		$cohorts = $this->connection->fetch_all($query);
+		foreach($cohorts as $cohort)
+		{
+			foreach($cohort as $key => $value)
+			{
+				if($key=='id')
+				{
+					$cohort_id=$value;
+				}
+			}
+		}
+
+		for($week=1; $week<=9; $week++)
+		{
+			for($day=1; $day<=5; $day++)
+			{
+				$query="INSERT INTO schedules (cohort_id, week, day, created_at) VALUES ($cohort_id, $week, $day, NOW())";
+				mysql_query($query);
+			}
+		}
+		$html="New cohort created for " . $_POST['location'] . ", starting " . $_POST['start_date'] . ".";
+		echo json_encode($html);
+	}
+
 
 	function scheduleDisplay()
 	{
@@ -544,12 +579,11 @@ var_dump($_POST);
 
 if(isset($_POST['update_answer']))
 {
-
-var_dump($_POST);
-	unset($_POST);
 	// $query="UPDATE answers SET feedback_title='{$_POST['feedback_title']}', feedback_author='{$_POST['feedback_author']}', recipient='{$_POST['recipient']}', available_on='{$_POST['available_on']}', feedback_type='{$_POST['feedback_type']}', url='{$_POST['url']}' WHERE answers.id='{$_POST['answer_id']}'";
 	// $display->editAnswers();
 	// unset($_POST);
+var_dump($_POST);
+	unset($_POST);
 }
 
 
@@ -583,11 +617,56 @@ if(isset($_POST['search_users']))
 	unset($_POST);
 }
 
+if(isset($_POST['edit_user']))
+{
+	$condition=$_POST['condition'];
+	$edit->editUserTable($condition);
+	unset($_POST);
+}
+
+if(isset($_POST['update_user']))
+{
+	if($_POST['cohort_id']==1)
+	{
+		$user_level=2;
+	}
+	else
+	{
+		$user_level=1;
+	}
+	$query="UPDATE users SET first_name='{$_POST['first_name']}', last_name='{$_POST['last_name']}', email='{$_POST['email']}', cohort_id='{$_POST['cohort_id']}', modified_at=NOW(), user_level=" . $user_level . " WHERE users.id='{$_POST['user_id']}'";
+	echo $query;
+	// mysql_query($query);
+	$condition=$_POST['condition'];
+	$edit->editUserTable($condition);
+	unset($_POST);
+}
+
+
+if(isset($_POST['delete_user_request']))
+{
+	$condition=$_POST['condition'];
+	$edit->editUserTable($condition);
+	unset($_POST);
+}
+
+if(isset($_POST['delete_user']))
+{
+
+	$query="DELETE FROM users WHERE users.id={$_POST['user_id']}";
+	mysql_query($query);
+	$condition=$_POST['condition'];
+	$edit->editUserTable($condition);
+	unset($_POST);	
+}
+
+
 if(isset($_POST['select_cohort_schedule']))
 {
 	$edit->scheduleDisplay();
 	unset($_POST);
 }
+
 
 
 ?>

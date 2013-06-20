@@ -352,7 +352,7 @@ td.mid_width{
 	margin-left: 206px;
 }
 
-.delete_button{
+.delete_button, .delete_user_button{
 	background-image: url('../img/red_gradient_24.png');
 	background-repeat:repeat-x;
 	border:1px solid black;
