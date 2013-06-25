@@ -183,6 +183,7 @@ Class Display extends Process
 							//Form for updating answer
 							if((isset($_POST['edit_answer'])) && (($answer['answer_id'])==($_POST['answer_id'])))
 							{
+								// $html. "nada";
 								$html=$html . "<table class='assignment_space'><tbody><tr><td>
 									<fieldset class='form_align'>
 									<form class='udpate_answer' action='answersheet_process.php' method='post'>
@@ -199,7 +200,6 @@ Class Display extends Process
 									<input type='radio' name='feedback_type' value='2'>Code<br />";
 								}
 								else
-
 								{
 									$html=$html . "<label>Feedback Type</label><input type='radio' name='feedback_type' value='1'>Video
 									<input type='radio' name='feedback_type' value='2' checked>Code<br />";
@@ -207,9 +207,19 @@ Class Display extends Process
 								$html=$html . "<label>URL</label><input type='text' name='url' value='".$answer['url']."'><br />
 									<input type='submit' class='udpate_button' value='Update Answer' />
 									</form></fieldset>
-									</td></tr></tbody></table>";
+									</td>";
+								$html=$html . "
+									<form class='delete_request' action='answersheet_process.php' method='post'>
+									<input type='hidden' name='delete_request' />
+									<input type='hidden' name='cohort' value='" . $cohort . "'/>	
+									<input type='hidden' name='answer_id' value='" . $answer['answer_id'] . "'/>
+									<input type='submit' class='delete_request_button' value='Delete' />
+									</form></td>
+									</tr></tbody></table>";
 							}
 							//Display feedback
+
+// I THINK THAT THIS ELSE STATEMENT MAY END IN THE WRONG PLACE
 							else
 							{
 								$html=$html . "<table class='assignment_space'><tbody><tr><td>" . $answer['feedback_title'] . " posted by " . $answer['author_first_name'];
@@ -240,8 +250,9 @@ Class Display extends Process
 									<input type='submit' class='edit_button' value='Edit' />
 									</form>";
 								//Form to confirm deletion
-								if(isset($_POST['delete_request']) && ($answer['answer_id']==$_POST['answer_id'])){
-								$html=$html . "
+								if(isset($_POST['delete_request']) && ($answer['answer_id']==$_POST['answer_id']))
+								{
+									$html=$html . "
 									<form class='delete_answer' action='answersheet_process.php' method='post'>
 									<input type='hidden' name='delete_answer' />
 									<input type='hidden' name='cohort' value='" . $cohort . "'/>	
@@ -396,7 +407,7 @@ Class Edit extends Process
 		}
 		$query = "SELECT users.id AS user_id, first_name, last_name, email, cohort_id, cohorts.location, cohorts.start_date FROM users LEFT JOIN cohorts on cohorts.id=users.cohort_id WHERE " . $param . " ORDER BY last_name ASC";
 		$users = $this->connection->fetch_all($query);
-		$html = $param . $query . "<table id='user_table' border='1'>
+		$html = "<table id='user_table' border='1'>
 			<thead>
 				<tr>
 					<th>First Name</th>
@@ -411,29 +422,62 @@ Class Edit extends Process
 		";
 		foreach($users as $user)
 		{
-			$html .= "
-				<tr>
-					<td class='min_width'>{$user['first_name']}</td>
-					<td class='min_width'>{$user['last_name']}</td>
-					<td>{$user['email']}</td>";
-			if($user['cohort_id']==1)
+			if((isset($_POST['edit_user']))&&($_POST['user_id']==$user['user_id']))
 			{
-				$html .= "<td class='min_width'>Instructor</td>";
+				$html .= "
+					<tr>
+						<form class='update_user' action='answersheet_process.php' method='post'>
+							<input type='hidden' name='update_user' />";
+				$html .='	<input type="hidden" name="condition" value="' . $param . '" />';
+				$html .="	<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+							<td class='min_width'><input type='text' name='first_name' value='" . $user['first_name'] . "'></td>
+							<td class='min_width'><input type='text' name='last_name' value='" . $user['last_name'] . "'></td>
+							<td><input type='text' name='email' value='" . $user['email'] . "'></td>";
+				$query="SELECT cohorts.id as cohort_id, location, start_date from cohorts ORDER BY cohorts.location, cohorts.start_date ASC";
+				$results = $this->connection->fetch_all($query);
+				$html .= "<td class='min_width'><select name = 'cohort_id'>";
+				foreach($results as $cohort)
+				{
+					if($_POST['cohort_id']==$cohort['cohort_id'])
+					{
+						$html=$html . "<option value='" . $cohort['cohort_id'] . "' selected>" . $cohort['location'] . " - " . $cohort['start_date'] . "</option>";							
+					}
+					else
+					{
+						$html=$html . "<option value=" . $cohort['cohort_id'] . ">" . $cohort['location'] . " - " . $cohort['start_date'] . "</option>";					
+					}
+				}
+// PRESET ON EXISTING VALUE
+				$html .= "</select>
+						<td><input type='submit' class='update_user_button' value='Update' /></td>
+					</form>";
 			}
 			else
 			{
-				$html .= "<td class='mid_width'>{$user['location']} - {$user['start_date']}</td>";
+				$html .= "
+					<tr>
+						<td class='min_width'>{$user['first_name']}</td>
+						<td class='min_width'>{$user['last_name']}</td>
+						<td>{$user['email']}</td>";
+				if($user['cohort_id']==1)
+				{
+					$html .= "<td class='min_width'>Instructor</td>";
+				}
+				else
+				{
+					$html .= "<td class='mid_width'>{$user['location']} - {$user['start_date']}</td>";
+				}				
+				$html .="
+						<td>
+							<form class='edit_user' action='answersheet_process.php' method='post'>
+								<input type='hidden' name='edit_user' />";
+				$html .='		<input type="hidden" name="condition" value="' . $param . '" />';
+				$html .="		<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />
+								<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
+								<input type='submit' class='edit_user_button' value='Edit' />
+							</form>
+						</td>";
 			}
-			$html .="
-					<td>
-						<form class='edit_user' action='answersheet_process.php' method='post'>
-							<input type='hidden' name='edit_user' />";
-			$html .='		<input type="hidden" name="condition" value="' . $param . '" />';
-			$html .="		<input type='hidden' name='cohort_id' value='" . $user['cohort_id'] . "' />
-							<input type='hidden' name='user_id' value='" . $user['user_id'] . "' />
-							<input type='submit' class='edit_user_button' value='Edit' />
-						</form>
-					</td>";
 			//Form to confirm deletion of user
 			if(isset($_POST['delete_user_request']) && ($user['user_id']==$_POST['user_id']))
 			{
@@ -635,8 +679,7 @@ if(isset($_POST['update_user']))
 		$user_level=1;
 	}
 	$query="UPDATE users SET first_name='{$_POST['first_name']}', last_name='{$_POST['last_name']}', email='{$_POST['email']}', cohort_id='{$_POST['cohort_id']}', modified_at=NOW(), user_level=" . $user_level . " WHERE users.id='{$_POST['user_id']}'";
-	echo $query;
-	// mysql_query($query);
+	mysql_query($query);
 	$condition=$_POST['condition'];
 	$edit->editUserTable($condition);
 	unset($_POST);

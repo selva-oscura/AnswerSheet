@@ -84,6 +84,20 @@
 					});
 				});	
 
+				$(document).on('click', '.update_user_button', function(event){
+					$('.update_user').on('submit', function(){
+						$.post(
+							$(this).attr('action'),
+							$(this).serialize(),
+							function(data){
+								$('#results').html(data.html);
+							}
+							, "json"
+						)
+						return false;					
+					});
+				});	
+
 				$(document).on('click', '.delete_user_request_button', function(event){
 					$('.delete_user_request').on('submit', function(){
 						$.post(
